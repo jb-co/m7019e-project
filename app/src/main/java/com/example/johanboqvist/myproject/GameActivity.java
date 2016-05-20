@@ -213,14 +213,15 @@ public class GameActivity extends AppCompatActivity {
                                     int offsetY = (int)scrollY;
 
                                         if(c == '1') {
-                                            paint.setColor(Color.BLACK);
-                                            canvas.drawRect(x * TILE_SIZE - offsetX, y*TILE_SIZE - offsetY,
-                                                    x * TILE_SIZE - offsetX + TILE_SIZE, y * TILE_SIZE - offsetY + TILE_SIZE, paint);
+                                            RectF re = new RectF(x * TILE_SIZE - offsetX, y*TILE_SIZE - offsetY,
+                                                    x * TILE_SIZE - offsetX + TILE_SIZE, y * TILE_SIZE - offsetY + TILE_SIZE);
+                                            Rect d = new Rect(16, 16*5, 16 + 16, 16*5 + 16);
+                                            canvas.drawBitmap(sprites, d, re, null);
                                         } else {
                                             RectF re = new RectF(x * TILE_SIZE - offsetX, y*TILE_SIZE - offsetY,
                                                     x * TILE_SIZE - offsetX + TILE_SIZE, y * TILE_SIZE - offsetY + TILE_SIZE);
-                                            RectF d = new RectF(16*5, 0, 16, 16*15 + 16);
-                                            canvas.drawBitmap(sprites, re, d, null);
+                                            Rect d = new Rect(0, 16*5, 16, 16*5 + 16);
+                                            canvas.drawBitmap(sprites, d, re, null);
                                         }
 
 

@@ -22,7 +22,7 @@ public class Player extends Mob {
 
         if(frameCounter > frameDelay){
             frameCounter = 0;
-            frame = (frame + 1) % 5;
+            frame = (frame + 1) % 6;
         }
 
         if(dir == 1){
