@@ -1,5 +1,7 @@
 package com.example.johanboqvist.myproject.Mob;
 
+import android.graphics.Rect;
+
 import java.util.Random;
 
 /**
@@ -15,6 +17,11 @@ public class Randomer extends Mob {
         super(x, y);
 
         this.speed = 1.5f;
+    }
+
+    @Override
+    public Rect getFrame() {
+        return new Rect(frame * 16, 16 * 3, frame * 16 + 16, 16 * 3 + 16);
     }
 
     @Override
@@ -48,6 +55,15 @@ public class Randomer extends Mob {
                 break;
             }
 
+        }
+
+        frameCounter++;
+
+        if(frameCounter > frameDelay) {
+            frameCounter = 0;
+            frame += 1;
+
+            frame = frame % 6;
         }
     }
 

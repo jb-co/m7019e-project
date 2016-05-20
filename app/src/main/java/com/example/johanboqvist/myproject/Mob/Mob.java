@@ -1,6 +1,7 @@
 package com.example.johanboqvist.myproject.Mob;
 
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 import com.example.johanboqvist.myproject.GameActivity;
 import com.example.johanboqvist.myproject.MapManager;
@@ -12,8 +13,12 @@ public abstract class Mob {
 
     protected float x, y;
     protected int dir = 1;
+    protected int frame = 0;
+    protected int frameDelay = 8;
+    protected int frameCounter = 0;
     protected MapManager mapManager;
     protected float prevX, prevY;
+    public final static Rect DIMENSIONS = new Rect (0, 0, GameActivity.TILE_SIZE, GameActivity.TILE_SIZE);
 
     protected float speed = 1;
     private Paint paint;
@@ -61,6 +66,7 @@ public abstract class Mob {
         return paint;
     }
 
+    public abstract Rect getFrame();
 
     public abstract void handleCollision();
 }

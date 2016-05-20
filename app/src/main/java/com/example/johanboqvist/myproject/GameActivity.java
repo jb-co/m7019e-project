@@ -1,9 +1,13 @@
 package com.example.johanboqvist.myproject;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.SurfaceHolder;
@@ -12,16 +16,20 @@ import android.widget.RelativeLayout;
 
 import com.example.johanboqvist.myproject.Mob.Circler;
 import com.example.johanboqvist.myproject.Mob.Mob;
+import com.example.johanboqvist.myproject.Mob.Player;
 import com.example.johanboqvist.myproject.Mob.Randomer;
 import com.example.johanboqvist.myproject.Mob.Slider;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity {
 
-    public final static int TILE_SIZE = 64;
+    public final static int TILE_SIZE = 96;
     public final static int MAP_WIDTH = 24;
     public final static int MAP_HEIGHT = 8;
+
+    static Bitmap sprites;
 
     private MapManager mapManager = new MapManager(this);
     private Accelerometer accelerometer;
@@ -30,8 +38,10 @@ public class GameActivity extends AppCompatActivity {
     private float scrollY = 0.f;
     private float speed = 2.5f;
 
-    private float playerX = TILE_SIZE * 12;
+    private float playerX = TILE_SIZE * 6;
     private float playerY = TILE_SIZE * 4;
+
+    private Player player;
 
     private ArrayList<Integer> map;
     private ArrayList<Mob> npcs;
@@ -43,12 +53,22 @@ public class GameActivity extends AppCompatActivity {
 
         final GameView gameView = new GameView(GameActivity.this);
 
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sprites);
+        final int mBitmapHeightAndWidth = (int) getResources().getDimension(
+                R.dimen.image_height);
+        sprites = Bitmap.createScaledBitmap(bitmap,
+                114, 164, false);
+
 
         mapManager.loadMap(R.raw.level1);
 
         map = mapManager.getMap();
 
         npcs = new ArrayList<Mob>();
+
+        player = new Player(playerX, playerY);
+
+
 
         loadNPCs();
 
@@ -64,8 +84,16 @@ public class GameActivity extends AppCompatActivity {
         float moveX = accelerometer.getY() * speed;
         float moveY = accelerometer.getX() * speed;
 
-        float mapX = (playerX+scrollX);
-        float mapY = (playerY+scrollY);
+        float mapX = (player.getX() + scrollX);
+        float mapY = (player.getY() + scrollY);
+
+        player.move();
+
+        if(moveX > 0){
+            player.setDir(1);
+        } else {
+            player.setDir(-1);
+        }
 
         if(!isCollision(mapX, mapY, moveX, 0)) {
             scrollX += moveX;
@@ -166,7 +194,7 @@ public class GameActivity extends AppCompatActivity {
 
                         /* draw here ! */
                         if (null != canvas) {
-                            canvas.drawColor(Color.WHITE);
+                            canvas.drawColor(Color.rgb(191, 191, 191));
 
 
                             int left = (int)(scrollX / TILE_SIZE) ;
@@ -189,7 +217,10 @@ public class GameActivity extends AppCompatActivity {
                                             canvas.drawRect(x * TILE_SIZE - offsetX, y*TILE_SIZE - offsetY,
                                                     x * TILE_SIZE - offsetX + TILE_SIZE, y * TILE_SIZE - offsetY + TILE_SIZE, paint);
                                         } else {
-
+                                            RectF re = new RectF(x * TILE_SIZE - offsetX, y*TILE_SIZE - offsetY,
+                                                    x * TILE_SIZE - offsetX + TILE_SIZE, y * TILE_SIZE - offsetY + TILE_SIZE);
+                                            RectF d = new RectF(16*5, 0, 16, 16*15 + 16);
+                                            canvas.drawBitmap(sprites, re, d, null);
                                         }
 
 
@@ -197,14 +228,18 @@ public class GameActivity extends AppCompatActivity {
                             }
 
 
-
                             for(Mob mob : npcs){
-                                paint.setColor(Color.RED);
+                                /*paint.setColor(Color.RED);
                                 canvas.drawRect(mob.getX() - scrollX, mob.getY() - scrollY,
-                                        mob.getX() + TILE_SIZE - scrollX, mob.getY() + TILE_SIZE - scrollY, paint);
+                                        mob.getX() + TILE_SIZE - scrollX, mob.getY() + TILE_SIZE - scrollY, paint);*/
+                                RectF r = new RectF(mob.getX() - scrollX, mob.getY() - scrollY,
+                                        mob.getX() + TILE_SIZE - scrollX, mob.getY() + TILE_SIZE - scrollY);
+                                canvas.drawBitmap(sprites, mob.getFrame(), r, null );
                             }
-                            paint.setColor(Color.BLUE);
-                            canvas.drawRect(playerX, playerY, playerX + TILE_SIZE, playerY + TILE_SIZE, paint);
+
+
+                            canvas.drawBitmap(sprites, player.getFrame(), new RectF(player.getX(), player.getY(),
+                                    player.getX() + TILE_SIZE, player.getY() + TILE_SIZE), null);
                             surfaceHolder.unlockCanvasAndPost(canvas);
                         }
 
