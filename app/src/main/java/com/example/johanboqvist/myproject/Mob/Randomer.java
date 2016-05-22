@@ -21,7 +21,7 @@ public class Randomer extends Mob {
 
     @Override
     public Rect getFrame() {
-        return new Rect(frame * 16, 16 * 3, frame * 16 + 16, 16 * 3 + 16);
+        return new Rect(frame * 16, 16 * 2, frame * 16 + 16, 16 * 2 + 16);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class Randomer extends Mob {
             frameCounter = 0;
             frame += 1;
 
-            frame = frame % 6;
+            frame = frame % 5;
         }
     }
 

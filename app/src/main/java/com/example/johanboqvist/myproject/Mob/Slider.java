@@ -1,6 +1,7 @@
 package com.example.johanboqvist.myproject.Mob;
 
 import android.graphics.Rect;
+import android.util.Log;
 
 import com.example.johanboqvist.myproject.MapManager;
 
@@ -16,7 +17,7 @@ public class Slider extends Mob {
 
     @Override
     public Rect getFrame() {
-            return new Rect(frame * 16, 16*2, frame * 16 + 16, 16*2 + 16);
+            return new Rect(frame * 16, 16*3, frame * 16 + 16, 16*3 + 16);
     }
 
     @Override
@@ -35,11 +36,14 @@ public class Slider extends Mob {
 
         frameCounter++;
 
-        if(frameCounter > frameDelay) {
+        if(frameCounter > frameDelay || frameCounter < 0) {
             frameCounter = 0;
-            frame += 1;
+            frame += this.dir;
 
             frame = frame % 6;
+
+            if(frame < 0) frame = 5;
+
         }
 
     }

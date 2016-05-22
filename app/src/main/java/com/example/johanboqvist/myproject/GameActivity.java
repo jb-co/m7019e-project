@@ -8,8 +8,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.RelativeLayout;
@@ -54,8 +60,7 @@ public class GameActivity extends AppCompatActivity {
         final GameView gameView = new GameView(GameActivity.this);
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sprites);
-        final int mBitmapHeightAndWidth = (int) getResources().getDimension(
-                R.dimen.image_height);
+
         sprites = Bitmap.createScaledBitmap(bitmap,
                 114, 164, false);
 
@@ -77,6 +82,17 @@ public class GameActivity extends AppCompatActivity {
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.frame);
         relativeLayout.addView(gameView);
 
+
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
     }
 
     public synchronized void move(){
@@ -146,11 +162,27 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    public void updatePhysics(){
+
+        for(Mob mob : npcs){
+
+            //insert check for out of bounds here!
+            mob.move();
+
+            if(isCollision(mob.getX(), mob.getY(), 0, 0)){
+                mob.handleCollision();
+            }
+        }
+
+        move();
+    }
+
 
     private class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         private Thread gameThread = null;
         private SurfaceHolder surfaceHolder;
+
 
         public GameView(Context context) {
             super(context);
@@ -159,6 +191,8 @@ public class GameActivity extends AppCompatActivity {
             surfaceHolder.addCallback(this);
         }
 
+
+
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
 
@@ -166,35 +200,37 @@ public class GameActivity extends AppCompatActivity {
                 @Override
                 public void run() {
 
-                    Canvas canvas = null;
-                    Paint paint = new Paint();
+                    Canvas canvas;
 
                     int width = getWidth();
                     int height = getHeight();
 
+                    final double ns = 1000000000.0 / 60.0;
+                    long now, lastTime = System.nanoTime();
+                    int ticks = 0;
+                    double delta = 0;
+                    double fps = 0;
+                    double nextSkip = System.nanoTime() + ns;
 
                     while (true) {
+                        now = System.nanoTime();
+                        delta += (now - lastTime);
+                        lastTime = now;
+                        ticks++;
 
-                        for(Mob mob : npcs){
+                        updatePhysics();
 
-                            //insert check for out of bounds here!
-                            mob.move();
 
-                            if(isCollision(mob.getX(), mob.getY(), 0, 0)){
-                               mob.handleCollision();
-                            }
-                        }
 
-                        move();
 
-                        /*if(!surfaceHolder.getSurface().isValid())
-                            continue;*/
+                        if(!surfaceHolder.getSurface().isValid())
+                            continue;
 
                         canvas = surfaceHolder.lockCanvas();
 
                         /* draw here ! */
                         if (null != canvas) {
-                            canvas.drawColor(Color.rgb(191, 191, 191));
+                            canvas.drawColor(Color.BLACK);
 
 
                             int left = (int)(scrollX / TILE_SIZE) ;
@@ -230,9 +266,6 @@ public class GameActivity extends AppCompatActivity {
 
 
                             for(Mob mob : npcs){
-                                /*paint.setColor(Color.RED);
-                                canvas.drawRect(mob.getX() - scrollX, mob.getY() - scrollY,
-                                        mob.getX() + TILE_SIZE - scrollX, mob.getY() + TILE_SIZE - scrollY, paint);*/
                                 RectF r = new RectF(mob.getX() - scrollX, mob.getY() - scrollY,
                                         mob.getX() + TILE_SIZE - scrollX, mob.getY() + TILE_SIZE - scrollY);
                                 canvas.drawBitmap(sprites, mob.getFrame(), r, null );
@@ -241,7 +274,13 @@ public class GameActivity extends AppCompatActivity {
 
                             canvas.drawBitmap(sprites, player.getFrame(), new RectF(player.getX(), player.getY(),
                                     player.getX() + TILE_SIZE, player.getY() + TILE_SIZE), null);
+
+
+                            Paint paint = new Paint();
+                            paint.setColor(Color.WHITE);
+                            canvas.drawText("FPS: " + fps, 100, 400, paint);
                             surfaceHolder.unlockCanvasAndPost(canvas);
+
                         }
 
                     }

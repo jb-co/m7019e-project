@@ -30,7 +30,7 @@ public class Circler extends Mob {
 
         if(frameCounter > frameDelay){
             frameCounter = 0;
-            frame = (frame + 1) % 7;
+            frame = (frame + 1) % 6;
 
         }
     }
