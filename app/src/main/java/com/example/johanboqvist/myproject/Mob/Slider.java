@@ -13,6 +13,8 @@ public class Slider extends Mob {
 
     public Slider(float x, float y) {
         super(x, y);
+
+        this.speed = 172f;
     }
 
     @Override
@@ -28,11 +30,11 @@ public class Slider extends Mob {
     }
 
     @Override
-    public void move() {
+    public void update(double delta) {
 
         setCurrentPos();
 
-        this.y += 1.5 * this.dir;
+        this.y += 1.5 * this.dir * delta * this.speed;
 
         frameCounter++;
 

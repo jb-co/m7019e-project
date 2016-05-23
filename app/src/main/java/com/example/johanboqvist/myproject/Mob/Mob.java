@@ -3,25 +3,19 @@ package com.example.johanboqvist.myproject.Mob;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import com.example.johanboqvist.myproject.Entity;
 import com.example.johanboqvist.myproject.GameActivity;
 import com.example.johanboqvist.myproject.MapManager;
 
 /**
  * Created by johanboqvist on 20/05/16.
  */
-public abstract class Mob {
+public abstract class Mob extends Entity {
 
-    protected float x, y;
     protected int dir = 1;
-    protected int frame = 0;
-    protected int frameDelay = 8;
-    protected int frameCounter = 0;
-    protected MapManager mapManager;
     protected float prevX, prevY;
-    public final static Rect DIMENSIONS = new Rect (0, 0, GameActivity.TILE_SIZE, GameActivity.TILE_SIZE);
-
     protected float speed = 1;
-    private Paint paint;
+
 
 
     public void setX(float x) {
@@ -43,7 +37,7 @@ public abstract class Mob {
     }
 
 
-    public abstract void move();
+    public abstract void update(double delta);
 
     public Mob(float x, float y){
         this.x = x;
@@ -60,10 +54,6 @@ public abstract class Mob {
 
     public float getSpeed() {
         return speed;
-    }
-
-    public Paint getPaint() {
-        return paint;
     }
 
     public abstract Rect getFrame();

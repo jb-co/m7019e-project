@@ -16,15 +16,16 @@ public class Circler extends Mob {
 
         centerX = x;
         centerY = y;
+        this.speed = 50;
     }
 
     @Override
-    public void move() {
+    public void update(double delta) {
 
         x = centerX + (float) Math.cos(rotation) * r;
         y = centerY + (float) Math.sin(rotation) * r;
 
-        rotation += 0.05;
+        rotation += 0.05 * delta * this.speed;
 
         frameCounter++;
 

@@ -16,7 +16,7 @@ public class Randomer extends Mob {
     public Randomer(float x, float y) {
         super(x, y);
 
-        this.speed = 1.5f;
+        this.speed = 100.0f;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class Randomer extends Mob {
     }
 
     @Override
-    public void move() {
+    public void update(double delta) {
 
         setCurrentPos();
 
@@ -39,19 +39,19 @@ public class Randomer extends Mob {
         switch(this.dir){
 
             case 0: {
-                this.y -= speed;
+                this.y -= speed * delta;
                 break;
             }
             case 1: {
-                this.x += speed;
+                this.x += speed * delta;
                 break;
             }
             case 2: {
-                this.y += speed;
+                this.y += speed * delta;
                 break;
             }
             case 3: {
-                this.x -= speed;
+                this.x -= speed * delta;
                 break;
             }
 

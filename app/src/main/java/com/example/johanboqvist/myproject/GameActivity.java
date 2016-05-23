@@ -8,12 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.SurfaceHolder;
@@ -21,13 +17,14 @@ import android.view.SurfaceView;
 import android.widget.RelativeLayout;
 
 import com.example.johanboqvist.myproject.Mob.Circler;
+import com.example.johanboqvist.myproject.Mob.Coin;
 import com.example.johanboqvist.myproject.Mob.Mob;
 import com.example.johanboqvist.myproject.Mob.Player;
 import com.example.johanboqvist.myproject.Mob.Randomer;
 import com.example.johanboqvist.myproject.Mob.Slider;
 
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -42,12 +39,15 @@ public class GameActivity extends AppCompatActivity {
 
     private float scrollX = 0.f;
     private float scrollY = 0.f;
-    private float speed = 2.5f;
+    private float speed = 120.0f;
 
     private float playerX = TILE_SIZE * 6;
     private float playerY = TILE_SIZE * 4;
 
     private Player player;
+
+    private int coins;
+    private int collected = 0;
 
     private ArrayList<Integer> map;
     private ArrayList<Mob> npcs;
@@ -95,15 +95,15 @@ public class GameActivity extends AppCompatActivity {
         return true;
     }
 
-    public synchronized void move(){
+    public synchronized void move(double delta){
 
-        float moveX = accelerometer.getY() * speed;
-        float moveY = accelerometer.getX() * speed;
+        float moveX = accelerometer.getY() * speed * (float)delta;
+        float moveY = accelerometer.getX() * speed * (float)delta;
 
         float mapX = (player.getX() + scrollX);
         float mapY = (player.getY() + scrollY);
 
-        player.move();
+        player.update(delta);
 
         if(moveX > 0){
             player.setDir(1);
@@ -156,25 +156,40 @@ public class GameActivity extends AppCompatActivity {
                     npcs.add(new Circler(x * TILE_SIZE, y * TILE_SIZE));
                 }   else if(map.get(x + y * MAP_WIDTH) == 'r'){
                     npcs.add(new Randomer(x * TILE_SIZE, y * TILE_SIZE));
+                } else if(map.get(x + y * MAP_WIDTH) == 'z'){
+                    this.coins++;
+                    npcs.add(new Coin(x * TILE_SIZE, y * TILE_SIZE));
                 }
 
             }
         }
     }
 
-    public void updatePhysics(){
+    public void update(double delta){
 
-        for(Mob mob : npcs){
+        Iterator<Mob> i = npcs.iterator();
+        while(i.hasNext()) {
+            Mob mob = i.next();
 
             //insert check for out of bounds here!
-            mob.move();
+            mob.update(delta);
 
             if(isCollision(mob.getX(), mob.getY(), 0, 0)){
                 mob.handleCollision();
             }
+
+            if(mob.getRect(scrollX, scrollY).intersect(player.getRect())){
+                if(mob.isCollectible()){
+                    this.collected++;
+                    i.remove();
+                } else {
+                    scrollX = 0;
+                    scrollY = 0;
+                }
+            }
         }
 
-        move();
+        move(delta);
     }
 
 
@@ -205,23 +220,19 @@ public class GameActivity extends AppCompatActivity {
                     int width = getWidth();
                     int height = getHeight();
 
-                    final double ns = 1000000000.0 / 60.0;
                     long now, lastTime = System.nanoTime();
-                    int ticks = 0;
                     double delta = 0;
-                    double fps = 0;
-                    double nextSkip = System.nanoTime() + ns;
+                    double clock = 300;
+
+
 
                     while (true) {
                         now = System.nanoTime();
-                        delta += (now - lastTime);
+                        delta = (now - lastTime) / 1000000000.0;
+                        clock = clock - delta;
                         lastTime = now;
-                        ticks++;
 
-                        updatePhysics();
-
-
-
+                        update(delta);
 
                         if(!surfaceHolder.getSurface().isValid())
                             continue;
@@ -278,7 +289,9 @@ public class GameActivity extends AppCompatActivity {
 
                             Paint paint = new Paint();
                             paint.setColor(Color.WHITE);
-                            canvas.drawText("FPS: " + fps, 100, 400, paint);
+                            paint.setTextSize(48f);
+                            canvas.drawText("Coins: "+collected+" / "+coins, 50, height-48, paint);
+                            canvas.drawText("Time: "+(int)clock, 400, height-48, paint);
                             surfaceHolder.unlockCanvasAndPost(canvas);
 
                         }

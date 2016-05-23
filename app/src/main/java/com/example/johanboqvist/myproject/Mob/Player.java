@@ -1,6 +1,9 @@
 package com.example.johanboqvist.myproject.Mob;
 
 import android.graphics.Rect;
+import android.graphics.RectF;
+
+import com.example.johanboqvist.myproject.GameActivity;
 
 /**
  * Created by johanboqvist on 20/05/16.
@@ -16,7 +19,7 @@ public class Player extends Mob {
     }
 
     @Override
-    public void move() {
+    public void update(double delta) {
 
         frameCounter++;
 
@@ -37,6 +40,8 @@ public class Player extends Mob {
 
         return new Rect(frame * 16, 16*offsetY, frame * 16 + 16, 16*offsetY + 16);
     }
+
+    public RectF getRect(){ return new RectF(x, y, x + GameActivity.TILE_SIZE, y + GameActivity.TILE_SIZE); }
 
     @Override
     public void handleCollision() {
