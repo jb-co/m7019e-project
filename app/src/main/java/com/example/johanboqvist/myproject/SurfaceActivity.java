@@ -26,7 +26,7 @@ import com.example.johanboqvist.myproject.Mob.Slider;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class GameActivity extends AppCompatActivity {
+public class SurfaceActivity extends AppCompatActivity {
 
     public final static int TILE_SIZE = 96;
     public final static int MAP_WIDTH = 24;
@@ -39,10 +39,6 @@ public class GameActivity extends AppCompatActivity {
 
     private float scrollX = 0.f;
     private float scrollY = 0.f;
-    private float speed = 120.0f;
-
-    private float playerX = TILE_SIZE * 6;
-    private float playerY = TILE_SIZE * 4;
 
     private Player player;
 
@@ -57,7 +53,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        final GameView gameView = new GameView(GameActivity.this);
+        final GameView gameView = new GameView(SurfaceActivity.this);
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sprites);
 
@@ -71,7 +67,7 @@ public class GameActivity extends AppCompatActivity {
 
         npcs = new ArrayList<Mob>();
 
-        player = new Player(playerX, playerY);
+        player = new Player(TILE_SIZE * 10, TILE_SIZE * 4);
 
 
 
@@ -97,6 +93,7 @@ public class GameActivity extends AppCompatActivity {
 
     public synchronized void move(double delta){
 
+        float speed = 120f;
         float moveX = accelerometer.getY() * speed * (float)delta;
         float moveY = accelerometer.getX() * speed * (float)delta;
 

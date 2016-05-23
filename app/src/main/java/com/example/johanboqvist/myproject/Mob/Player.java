@@ -3,7 +3,7 @@ package com.example.johanboqvist.myproject.Mob;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import com.example.johanboqvist.myproject.GameActivity;
+import com.example.johanboqvist.myproject.SurfaceActivity;
 
 /**
  * Created by johanboqvist on 20/05/16.
@@ -41,7 +41,7 @@ public class Player extends Mob {
         return new Rect(frame * 16, 16*offsetY, frame * 16 + 16, 16*offsetY + 16);
     }
 
-    public RectF getRect(){ return new RectF(x, y, x + GameActivity.TILE_SIZE, y + GameActivity.TILE_SIZE); }
+    public RectF getRect(){ return new RectF(x, y, x + SurfaceActivity.TILE_SIZE, y + SurfaceActivity.TILE_SIZE); }
 
     @Override
     public void handleCollision() {

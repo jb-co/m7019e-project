@@ -1,11 +1,8 @@
 package com.example.johanboqvist.myproject.Mob;
 
-import android.graphics.Paint;
 import android.graphics.Rect;
 
 import com.example.johanboqvist.myproject.Entity;
-import com.example.johanboqvist.myproject.GameActivity;
-import com.example.johanboqvist.myproject.MapManager;
 
 /**
  * Created by johanboqvist on 20/05/16.

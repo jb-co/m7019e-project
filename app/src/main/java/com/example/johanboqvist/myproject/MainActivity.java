@@ -3,11 +3,6 @@ package com.example.johanboqvist.myproject;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-
-import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        Intent gameActivity = new Intent(MainActivity.this, GameActivity.class);
+        Intent gameActivity = new Intent(MainActivity.this, SurfaceActivity.class);
 
 
         startActivity(gameActivity);
