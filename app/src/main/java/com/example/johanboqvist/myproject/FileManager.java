@@ -45,6 +45,14 @@ public class FileManager {
         br = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(R.raw.level1)));
     }
 
+    public void closeFile() {
+        try {
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int readValue(){
         int value;
 

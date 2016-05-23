@@ -12,18 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.widget.RelativeLayout;
-
-import com.example.johanboqvist.myproject.Mob.Circler;
-import com.example.johanboqvist.myproject.Mob.Coin;
 import com.example.johanboqvist.myproject.Mob.Mob;
 import com.example.johanboqvist.myproject.Mob.Player;
-import com.example.johanboqvist.myproject.Mob.Randomer;
-import com.example.johanboqvist.myproject.Mob.Slider;
-
-import java.util.ArrayList;
 import java.util.Iterator;
 
 public class SurfaceActivity extends AppCompatActivity {
@@ -31,24 +26,22 @@ public class SurfaceActivity extends AppCompatActivity {
     public final static int TILE_SIZE = 96;
     public final static int MAP_WIDTH = 24;
     public final static int MAP_HEIGHT = 8;
+    public static int CANVAS_WIDTH;
+    public static int CANVAS_HEIGHT;
 
     static Bitmap sprites;
 
-    private MapManager mapManager = new MapManager(this);
     private Accelerometer accelerometer;
+    private LevelData levelData;
 
-    private float scrollX = 0.f;
-    private float scrollY = 0.f;
+    private GameState gameState;
+    private boolean touched = false;
 
-    private Player player;
+    public float scrollX = 0.f;
+    public float scrollY = 0.f;
+    double clock = 300;
+    int points = 0;
 
-    private int coins;
-    private int collected = 0;
-
-    private ArrayList<Integer> map;
-    private ArrayList<Mob> npcs;
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
@@ -60,18 +53,10 @@ public class SurfaceActivity extends AppCompatActivity {
         sprites = Bitmap.createScaledBitmap(bitmap,
                 114, 164, false);
 
+        levelData = new LevelData(this);
+        levelData.loadLevel();
 
-        mapManager.loadMap(R.raw.level1);
-
-        map = mapManager.getMap();
-
-        npcs = new ArrayList<Mob>();
-
-        player = new Player(TILE_SIZE * 10, TILE_SIZE * 4);
-
-
-
-        loadNPCs();
+        gameState = new Playing();
 
         accelerometer = new Accelerometer(this);
 
@@ -82,20 +67,17 @@ public class SurfaceActivity extends AppCompatActivity {
 
     }
 
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         return true;
     }
 
-    public synchronized void move(double delta){
-
+    public synchronized void move(double delta) {
         float speed = 120f;
         float moveX = accelerometer.getY() * speed * (float)delta;
         float moveY = accelerometer.getX() * speed * (float)delta;
+        Player player = levelData.player;
 
         float mapX = (player.getX() + scrollX);
         float mapY = (player.getY() + scrollY);
@@ -114,9 +96,6 @@ public class SurfaceActivity extends AppCompatActivity {
         if(!isCollision(mapX, mapY, 0, moveY)) {
             scrollY += moveY;
         }
-
-
-
     }
 
     public boolean isCollision(float posX, float posY, float moveX, float moveY){
@@ -125,7 +104,6 @@ public class SurfaceActivity extends AppCompatActivity {
             int newX = (int)((posX + (i%2)*TILE_SIZE + moveX) / TILE_SIZE);
             int newY = (int)((posY + (i/2)*TILE_SIZE + moveY) / TILE_SIZE);
 
-
             if (newX > MAP_WIDTH || newX / TILE_SIZE < 0) {
                 return true;
             }
@@ -133,61 +111,14 @@ public class SurfaceActivity extends AppCompatActivity {
                 return true;
             }
 
-            if (map.get(newX + newY * MAP_WIDTH) == '1') {
+            if (levelData.map.get(newX + newY * MAP_WIDTH) == '1') {
                 return true;
             }
-
         }
         return false;
     }
 
 
-    public void loadNPCs(){
-
-        for(int y = 0; y < MAP_HEIGHT; y++) {
-            for (int x = 0; x < MAP_WIDTH; x++) {
-
-                if(map.get(x + y * MAP_WIDTH) == 'g'){
-                    npcs.add(new Slider(x * TILE_SIZE, y * TILE_SIZE));
-                }  else if(map.get(x + y * MAP_WIDTH) == 'c'){
-                    npcs.add(new Circler(x * TILE_SIZE, y * TILE_SIZE));
-                }   else if(map.get(x + y * MAP_WIDTH) == 'r'){
-                    npcs.add(new Randomer(x * TILE_SIZE, y * TILE_SIZE));
-                } else if(map.get(x + y * MAP_WIDTH) == 'z'){
-                    this.coins++;
-                    npcs.add(new Coin(x * TILE_SIZE, y * TILE_SIZE));
-                }
-
-            }
-        }
-    }
-
-    public void update(double delta){
-
-        Iterator<Mob> i = npcs.iterator();
-        while(i.hasNext()) {
-            Mob mob = i.next();
-
-            //insert check for out of bounds here!
-            mob.update(delta);
-
-            if(isCollision(mob.getX(), mob.getY(), 0, 0)){
-                mob.handleCollision();
-            }
-
-            if(mob.getRect(scrollX, scrollY).intersect(player.getRect())){
-                if(mob.isCollectible()){
-                    this.collected++;
-                    i.remove();
-                } else {
-                    scrollX = 0;
-                    scrollY = 0;
-                }
-            }
-        }
-
-        move(delta);
-    }
 
 
     private class GameView extends SurfaceView implements SurfaceHolder.Callback {
@@ -195,17 +126,20 @@ public class SurfaceActivity extends AppCompatActivity {
         private Thread gameThread = null;
         private SurfaceHolder surfaceHolder;
 
-
         public GameView(Context context) {
             super(context);
 
             surfaceHolder = getHolder();
             surfaceHolder.addCallback(this);
+
+            this.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    touched = true;
+                }
+            });
         }
 
-
-
-        @Override
         public void surfaceCreated(SurfaceHolder holder) {
 
             this.gameThread = new Thread(new Runnable() {
@@ -214,22 +148,22 @@ public class SurfaceActivity extends AppCompatActivity {
 
                     Canvas canvas;
 
-                    int width = getWidth();
-                    int height = getHeight();
+                    CANVAS_WIDTH = getWidth();
+                    CANVAS_HEIGHT = getHeight();
 
                     long now, lastTime = System.nanoTime();
                     double delta = 0;
-                    double clock = 300;
-
-
 
                     while (true) {
                         now = System.nanoTime();
                         delta = (now - lastTime) / 1000000000.0;
-                        clock = clock - delta;
                         lastTime = now;
 
-                        update(delta);
+                        gameState.update(delta);
+
+                        if(levelData.collected == levelData.coins){
+                            gameState = new LevelTransition();
+                        }
 
                         if(!surfaceHolder.getSurface().isValid())
                             continue;
@@ -238,57 +172,7 @@ public class SurfaceActivity extends AppCompatActivity {
 
                         /* draw here ! */
                         if (null != canvas) {
-                            canvas.drawColor(Color.BLACK);
-
-
-                            int left = (int)(scrollX / TILE_SIZE) ;
-                            int top = (int)(scrollY / TILE_SIZE);
-
-                            for(int y = top; y < top + 12; y++) {
-                                if(y < 0 || y > MAP_HEIGHT-1) continue;
-                                for(int x = left; x < left + 32; x++) {
-
-                                    if(x < 0 || x > MAP_WIDTH-1) continue;
-
-                                    if((x + y * MAP_WIDTH) >= map.size() || (x+y*MAP_WIDTH < 0)) continue;
-                                    int c = map.get(x + y * MAP_WIDTH);
-
-                                    int offsetX = (int)scrollX;
-                                    int offsetY = (int)scrollY;
-
-                                        if(c == '1') {
-                                            RectF re = new RectF(x * TILE_SIZE - offsetX, y*TILE_SIZE - offsetY,
-                                                    x * TILE_SIZE - offsetX + TILE_SIZE, y * TILE_SIZE - offsetY + TILE_SIZE);
-                                            Rect d = new Rect(16, 16*5, 16 + 16, 16*5 + 16);
-                                            canvas.drawBitmap(sprites, d, re, null);
-                                        } else {
-                                            RectF re = new RectF(x * TILE_SIZE - offsetX, y*TILE_SIZE - offsetY,
-                                                    x * TILE_SIZE - offsetX + TILE_SIZE, y * TILE_SIZE - offsetY + TILE_SIZE);
-                                            Rect d = new Rect(0, 16*5, 16, 16*5 + 16);
-                                            canvas.drawBitmap(sprites, d, re, null);
-                                        }
-
-
-                                }
-                            }
-
-
-                            for(Mob mob : npcs){
-                                RectF r = new RectF(mob.getX() - scrollX, mob.getY() - scrollY,
-                                        mob.getX() + TILE_SIZE - scrollX, mob.getY() + TILE_SIZE - scrollY);
-                                canvas.drawBitmap(sprites, mob.getFrame(), r, null );
-                            }
-
-
-                            canvas.drawBitmap(sprites, player.getFrame(), new RectF(player.getX(), player.getY(),
-                                    player.getX() + TILE_SIZE, player.getY() + TILE_SIZE), null);
-
-
-                            Paint paint = new Paint();
-                            paint.setColor(Color.WHITE);
-                            paint.setTextSize(48f);
-                            canvas.drawText("Coins: "+collected+" / "+coins, 50, height-48, paint);
-                            canvas.drawText("Time: "+(int)clock, 400, height-48, paint);
+                            gameState.render(canvas);
                             surfaceHolder.unlockCanvasAndPost(canvas);
 
                         }
@@ -310,5 +194,148 @@ public class SurfaceActivity extends AppCompatActivity {
         public void surfaceDestroyed(SurfaceHolder holder) {
 
         }
+
+    }
+
+    private abstract class GameState {
+        public abstract void render(Canvas canvas);
+        public abstract void update(double delta);
+    }
+
+    private class Playing extends GameState{
+
+        @Override
+        public void render(Canvas canvas) {
+            canvas.drawColor(Color.BLACK);
+
+
+            int left = (int)(scrollX / TILE_SIZE) ;
+            int top = (int)(scrollY / TILE_SIZE);
+
+            for(int y = top; y < top + 12; y++) {
+                if(y < 0 || y > MAP_HEIGHT-1) continue;
+                for(int x = left; x < left + 32; x++) {
+
+                    if(x < 0 || x > MAP_WIDTH-1) continue;
+
+                    if((x + y * MAP_WIDTH) >= levelData.map.size() || (x+y*MAP_WIDTH < 0)) continue;
+                    int c = levelData.map.get(x + y * MAP_WIDTH);
+
+                    int offsetX = (int)scrollX;
+                    int offsetY = (int)scrollY;
+
+                    if(c == '1') {
+                        RectF re = new RectF(x * TILE_SIZE - offsetX, y*TILE_SIZE - offsetY,
+                                x * TILE_SIZE - offsetX + TILE_SIZE, y * TILE_SIZE - offsetY + TILE_SIZE);
+                        Rect d = new Rect(16, 16*5, 16 + 16, 16*5 + 16);
+                        canvas.drawBitmap(sprites, d, re, null);
+                    } else {
+                        RectF re = new RectF(x * TILE_SIZE - offsetX, y*TILE_SIZE - offsetY,
+                                x * TILE_SIZE - offsetX + TILE_SIZE, y * TILE_SIZE - offsetY + TILE_SIZE);
+                        Rect d = new Rect(0, 16*5, 16, 16*5 + 16);
+                        canvas.drawBitmap(sprites, d, re, null);
+                    }
+
+
+                }
+            }
+
+
+            for(Mob mob : levelData.npcs){
+                RectF r = new RectF(mob.getX() - scrollX, mob.getY() - scrollY,
+                        mob.getX() + TILE_SIZE - scrollX, mob.getY() + TILE_SIZE - scrollY);
+                canvas.drawBitmap(sprites, mob.getFrame(), r, null );
+            }
+
+            Player player = levelData.player;
+            canvas.drawBitmap(sprites, player.getFrame(), new RectF(player.getX(), player.getY(),
+                    player.getX() + TILE_SIZE, player.getY() + TILE_SIZE), null);
+
+
+            Paint paint = new Paint();
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(48f);
+            String bottomBar = "Coins: "+levelData.collected+" / "+levelData.coins
+                    + "    Time: " + (int) clock + "    Total points: "+ points;
+            canvas.drawText(bottomBar, 50, CANVAS_HEIGHT - 48, paint);
+        }
+
+        public void update(double delta){
+
+            clock = clock - delta;
+
+            Iterator<Mob> i = levelData.npcs.iterator();
+            while(i.hasNext()) {
+                Mob mob = i.next();
+
+                //insert check for out of bounds here!
+                mob.update(delta);
+
+                if(isCollision(mob.getX(), mob.getY(), 0, 0)){
+                    mob.handleCollision();
+                }
+
+                if(mob.getRect(scrollX, scrollY).intersect(levelData.player.getRect())){
+                    if(mob.isCollectible()){
+                        levelData.collected++;
+                        i.remove();
+                    } else {
+                        scrollX = 0;
+                        scrollY = 0;
+                    }
+                }
+            }
+
+            move(delta);
+        }
+    }
+
+    private class LevelTransition extends GameState {
+
+
+        public void render(Canvas canvas) {
+            canvas.drawColor(Color.argb(40, 100, 220, 100));
+            Paint paint = new Paint();
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(128f);
+
+            String title = "STAGE COMPLETE!";
+            Rect bounds = new Rect();
+            paint.getTextBounds(title, 0, title.length(), bounds);
+            int x = (canvas.getWidth() / 2) - (bounds.width() / 2);
+            int y = (canvas.getHeight() / 2) - (bounds.height() / 2);
+            canvas.drawText(title,  x, y , paint);
+
+
+            paint.setTextSize(64f);
+            String points = "Time bonus: " + (int) clock;
+            bounds = new Rect();
+            paint.getTextBounds(points, 0, points.length(), bounds);
+            x = (canvas.getWidth() / 2) - (bounds.width() / 2);
+            y = (canvas.getHeight() / 2) - (bounds.height() / 2);
+            canvas.drawText(points, x, y + 64, paint);
+
+
+
+        }
+
+        @Override
+        public void update(double delta) {
+
+            if(touched){
+                touched = false;
+                points += (int) clock;
+                scrollX = 0;
+                scrollY = 0;
+                clock = 300;
+                levelData.collected = 0;
+                levelData.coins = 0;
+                levelData.loadLevel();
+
+                gameState = new Playing();
+            }
+        }
+
+
     }
 }

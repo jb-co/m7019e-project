@@ -30,6 +30,8 @@ public class MapManager {
             if (value == '\n') continue;   //ignore newline symbol
             map.add(value);
         }
+
+        f.closeFile();
     }
 
     public ArrayList<Integer> getMap() {
