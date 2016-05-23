@@ -293,6 +293,12 @@ public class SurfaceActivity extends AppCompatActivity {
     private class LevelTransition extends GameState {
 
 
+        private int bonus;
+
+        public LevelTransition(){
+            bonus = (int)clock;
+        }
+
         public void render(Canvas canvas) {
             canvas.drawColor(Color.argb(40, 100, 220, 100));
             Paint paint = new Paint();
@@ -308,7 +314,7 @@ public class SurfaceActivity extends AppCompatActivity {
 
 
             paint.setTextSize(64f);
-            String points = "Time bonus: " + (int) clock;
+            String points = "Time bonus: " + bonus;
             bounds = new Rect();
             paint.getTextBounds(points, 0, points.length(), bounds);
             x = (canvas.getWidth() / 2) - (bounds.width() / 2);
@@ -324,7 +330,7 @@ public class SurfaceActivity extends AppCompatActivity {
 
             if(touched){
                 touched = false;
-                points += (int) clock;
+                points += bonus;
                 scrollX = 0;
                 scrollY = 0;
                 clock = 300;
