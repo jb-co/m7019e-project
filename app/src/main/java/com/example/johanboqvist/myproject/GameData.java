@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * Created by johanboqvist on 23/05/16.
  */
-public class LevelData {
+public class GameData {
 
     public final static int TILE_SIZE = 96;
     public final static int MAP_WIDTH = 24;
@@ -31,7 +31,7 @@ public class LevelData {
     private MapManager mapManager;
     private Context context;
 
-    public LevelData(Context context){
+    public GameData(Context context){
         this.context = context;
 
         player = new Player(TILE_SIZE * 10, TILE_SIZE * 4);

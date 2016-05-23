@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -32,7 +31,7 @@ public class SurfaceActivity extends AppCompatActivity {
     static Bitmap sprites;
 
     private Accelerometer accelerometer;
-    private LevelData levelData;
+    private GameData gameData;
 
     private GameState gameState;
     private boolean touched = false;
@@ -53,8 +52,8 @@ public class SurfaceActivity extends AppCompatActivity {
         sprites = Bitmap.createScaledBitmap(bitmap,
                 114, 164, false);
 
-        levelData = new LevelData(this);
-        levelData.loadLevel();
+        gameData = new GameData(this);
+        gameData.loadLevel();
 
         gameState = new Playing();
 
@@ -77,7 +76,7 @@ public class SurfaceActivity extends AppCompatActivity {
         float speed = 120f;
         float moveX = accelerometer.getY() * speed * (float)delta;
         float moveY = accelerometer.getX() * speed * (float)delta;
-        Player player = levelData.player;
+        Player player = gameData.player;
 
         float mapX = (player.getX() + scrollX);
         float mapY = (player.getY() + scrollY);
@@ -111,7 +110,7 @@ public class SurfaceActivity extends AppCompatActivity {
                 return true;
             }
 
-            if (levelData.map.get(newX + newY * MAP_WIDTH) == '1') {
+            if (gameData.map.get(newX + newY * MAP_WIDTH) == '1') {
                 return true;
             }
         }
@@ -161,7 +160,7 @@ public class SurfaceActivity extends AppCompatActivity {
 
                         gameState.update(delta);
 
-                        if(levelData.collected == levelData.coins){
+                        if(gameData.collected == gameData.coins){
                             gameState = new LevelTransition();
                         }
 
@@ -208,7 +207,6 @@ public class SurfaceActivity extends AppCompatActivity {
         public void render(Canvas canvas) {
             canvas.drawColor(Color.BLACK);
 
-
             int left = (int)(scrollX / TILE_SIZE) ;
             int top = (int)(scrollY / TILE_SIZE);
 
@@ -218,8 +216,8 @@ public class SurfaceActivity extends AppCompatActivity {
 
                     if(x < 0 || x > MAP_WIDTH-1) continue;
 
-                    if((x + y * MAP_WIDTH) >= levelData.map.size() || (x+y*MAP_WIDTH < 0)) continue;
-                    int c = levelData.map.get(x + y * MAP_WIDTH);
+                    if((x + y * MAP_WIDTH) >= gameData.map.size() || (x+y*MAP_WIDTH < 0)) continue;
+                    int c = gameData.map.get(x + y * MAP_WIDTH);
 
                     int offsetX = (int)scrollX;
                     int offsetY = (int)scrollY;
@@ -241,13 +239,13 @@ public class SurfaceActivity extends AppCompatActivity {
             }
 
 
-            for(Mob mob : levelData.npcs){
+            for(Mob mob : gameData.npcs){
                 RectF r = new RectF(mob.getX() - scrollX, mob.getY() - scrollY,
                         mob.getX() + TILE_SIZE - scrollX, mob.getY() + TILE_SIZE - scrollY);
                 canvas.drawBitmap(sprites, mob.getFrame(), r, null );
             }
 
-            Player player = levelData.player;
+            Player player = gameData.player;
             canvas.drawBitmap(sprites, player.getFrame(), new RectF(player.getX(), player.getY(),
                     player.getX() + TILE_SIZE, player.getY() + TILE_SIZE), null);
 
@@ -255,7 +253,7 @@ public class SurfaceActivity extends AppCompatActivity {
             Paint paint = new Paint();
             paint.setColor(Color.WHITE);
             paint.setTextSize(48f);
-            String bottomBar = "Coins: "+levelData.collected+" / "+levelData.coins
+            String bottomBar = "Coins: "+ gameData.collected+" / "+ gameData.coins
                     + "    Time: " + (int) clock + "    Total points: "+ points;
             canvas.drawText(bottomBar, 50, CANVAS_HEIGHT - 48, paint);
         }
@@ -264,7 +262,7 @@ public class SurfaceActivity extends AppCompatActivity {
 
             clock = clock - delta;
 
-            Iterator<Mob> i = levelData.npcs.iterator();
+            Iterator<Mob> i = gameData.npcs.iterator();
             while(i.hasNext()) {
                 Mob mob = i.next();
 
@@ -275,9 +273,9 @@ public class SurfaceActivity extends AppCompatActivity {
                     mob.handleCollision();
                 }
 
-                if(mob.getRect(scrollX, scrollY).intersect(levelData.player.getRect())){
+                if(mob.getRect(scrollX, scrollY).intersect(gameData.player.getRect())){
                     if(mob.isCollectible()){
-                        levelData.collected++;
+                        gameData.collected++;
                         i.remove();
                     } else {
                         scrollX = 0;
@@ -334,9 +332,9 @@ public class SurfaceActivity extends AppCompatActivity {
                 scrollX = 0;
                 scrollY = 0;
                 clock = 300;
-                levelData.collected = 0;
-                levelData.coins = 0;
-                levelData.loadLevel();
+                gameData.collected = 0;
+                gameData.coins = 0;
+                gameData.loadLevel();
 
                 gameState = new Playing();
             }
