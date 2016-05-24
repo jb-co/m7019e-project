@@ -19,6 +19,10 @@ public class GameData {
     public final static int TILE_SIZE = 96;
     public final static int MAP_WIDTH = 24;
     public final static int MAP_HEIGHT = 8;
+    public final static int[] LEVELS = {
+            R.raw.level1
+
+    };
 
     public Player player;
 
@@ -37,10 +41,10 @@ public class GameData {
         player = new Player(TILE_SIZE * 10, TILE_SIZE * 4);
     }
 
-    public void loadLevel(){
+    public void loadLevel(int level){
 
         mapManager = new MapManager(context);
-        mapManager.loadMap(R.raw.level1);
+        mapManager.loadMap(level);
 
         map = mapManager.getMap();
 

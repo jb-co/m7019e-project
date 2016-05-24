@@ -44,7 +44,7 @@
         android:layout_width="174dp"
         android:layout_height="147dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="..."
+        android:text="Loading highscore..."
         android:id="@+id/textScore"
         android:layout_gravity="bottom|center_horizontal"
         android:gravity="center_horizontal" />

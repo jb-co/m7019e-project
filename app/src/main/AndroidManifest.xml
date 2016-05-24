@@ -29,7 +29,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".HighScoreActivity"
+        <activity android:name=".EndGameActivity"
             android:screenOrientation="landscape"
             android:parentActivityName=".MainActivity" >
             <!-- Parent activity meta-data to support 4.0 and lower -->

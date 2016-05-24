@@ -1,6 +1,7 @@
 package com.example.johanboqvist.myproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -41,6 +42,8 @@ public class SurfaceActivity extends AppCompatActivity {
     double clock = 300;
     int points = 0;
 
+    private int currentLevel = 0;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
@@ -53,7 +56,7 @@ public class SurfaceActivity extends AppCompatActivity {
                 114, 164, false);
 
         gameData = new GameData(this);
-        gameData.loadLevel();
+        gameData.loadLevel(GameData.LEVELS[currentLevel]);
 
         gameState = new Playing();
 
@@ -332,11 +335,17 @@ public class SurfaceActivity extends AppCompatActivity {
                 scrollX = 0;
                 scrollY = 0;
                 clock = 300;
-                gameData.collected = 0;
-                gameData.coins = 0;
-                gameData.loadLevel();
+                currentLevel++;
 
-                gameState = new Playing();
+                /* game finished? */
+                if(currentLevel >= GameData.LEVELS.length){
+                    Intent intent = new Intent(SurfaceActivity.this, EndGameActivity.class);
+                    finish();
+                    startActivity(intent);
+                } else {
+                    gameData.loadLevel(currentLevel);
+                    gameState = new Playing();
+                }
             }
         }
 

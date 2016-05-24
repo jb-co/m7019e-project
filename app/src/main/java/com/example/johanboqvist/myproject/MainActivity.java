@@ -20,24 +20,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-/*
-        new Thread(){
-            public void run() {
-                highScoreManager.getHighScore("http://52.49.26.113/highscore.txt");
-                if(highScoreManager.isHighScore("booo", 6)) {
-                    highScoreManager.writeHighScore("http://52.49.26.113/highscore.php");
-                }
-            }
-        }.start();*/
+
 
         textHighScore = (TextView) findViewById(R.id.textScore);
-
-        new Thread() {
-            public void run() {
-                result = highScoreManager.getHighScore("http://52.49.26.113/highscore.txt");
-                messageHandler.sendEmptyMessage(0);
-            }
-        }.start();
+        getHighScore();
 
 
         Button btn = (Button) findViewById(R.id.button);
@@ -57,11 +43,18 @@ public class MainActivity extends AppCompatActivity {
             {
                 @Override
                 public void onClick(View v) {
-                    Intent activity = new Intent(MainActivity.this, HighScoreActivity.class);
+                    Intent activity = new Intent(MainActivity.this, EndGameActivity.class);
                     startActivity(activity);
                 }
             });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        getHighScore();
     }
 
     private final Handler messageHandler = new Handler() {
@@ -70,4 +63,13 @@ public class MainActivity extends AppCompatActivity {
             textHighScore.setText(result);
         }
     };
+
+    public void getHighScore(){
+        new Thread() {
+            public void run() {
+                result = highScoreManager.getHighScore("http://52.49.26.113/highscore.txt");
+                messageHandler.sendEmptyMessage(0);
+            }
+        }.start();
+    }
 }
