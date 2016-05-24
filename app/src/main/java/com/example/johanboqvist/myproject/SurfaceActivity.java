@@ -41,6 +41,7 @@ public class SurfaceActivity extends AppCompatActivity {
     public float scrollY = 0.f;
     double clock = 300;
     int points = 0;
+    private boolean isRunning = false;
 
     private int currentLevel = 0;
 
@@ -67,6 +68,12 @@ public class SurfaceActivity extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isRunning = false;
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -144,6 +151,7 @@ public class SurfaceActivity extends AppCompatActivity {
 
         public void surfaceCreated(SurfaceHolder holder) {
 
+            isRunning = true;
             this.gameThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -156,7 +164,7 @@ public class SurfaceActivity extends AppCompatActivity {
                     long now, lastTime = System.nanoTime();
                     double delta = 0;
 
-                    while (true) {
+                    while (isRunning) {
                         now = System.nanoTime();
                         delta = (now - lastTime) / 1000000000.0;
                         lastTime = now;
@@ -194,7 +202,12 @@ public class SurfaceActivity extends AppCompatActivity {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
-
+            isRunning = false;
+            try {
+                gameThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -340,6 +353,7 @@ public class SurfaceActivity extends AppCompatActivity {
                 /* game finished? */
                 if(currentLevel >= GameData.LEVELS.length){
                     Intent intent = new Intent(SurfaceActivity.this, EndGameActivity.class);
+                    intent.putExtra("points", points);
                     finish();
                     startActivity(intent);
                 } else {

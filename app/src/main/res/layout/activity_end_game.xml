@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
-        android:id="@+id/textView3"
+        android:id="@+id/textPoints"
         android:layout_gravity="center_horizontal"
         android:paddingBottom="32dp" />
 

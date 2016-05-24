@@ -52,7 +52,7 @@ public class HighScoreManager {
         return null;
     }
 
-    public boolean isHighScore(String name, int points){
+    public int isHighScore(int points){
 
         boolean goodEnough = false;
         int pos = 0;
@@ -61,25 +61,24 @@ public class HighScoreManager {
         while (it.hasNext()) {
             HighScoreEntry h = (HighScoreEntry) it.next();
 
-
             if(points > h.points){
                 goodEnough = true;
                 break;
             }
-
             pos++;
-
         }
 
         if(goodEnough){
-            list.add(pos, new HighScoreEntry(name, points));
-            return true;
-            //new WriteHighScore().execute("http://52.49.26.113/highscore.php");
+           // list.add(pos, new HighScoreEntry(name, points));
+            return pos;
         } else {
-           // list.setText(s);
-            return false;
+            return -1;
         }
 
+    }
+
+    public void addEntry(int pos, String name, int points){
+        list.add(pos, new HighScoreEntry(name, points));
     }
 
     public void writeHighScore(String location){
