@@ -21,22 +21,33 @@
         </activity>
         <activity
             android:name=".SurfaceActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="landscape"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:parentActivityName=".MainActivity" >
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".EndGameActivity"
-            android:screenOrientation="landscape"
-            android:parentActivityName=".MainActivity" >
+        <activity
+            android:name=".EndGameActivity"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="landscape">
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
-            </activity>
+        </activity>
+        <activity android:name=".SettingsActivity"
+            android:screenOrientation="landscape"
+            android:parentActivityName=".MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
     </application>
 
 </manifest>

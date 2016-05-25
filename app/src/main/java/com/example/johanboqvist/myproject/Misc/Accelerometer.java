@@ -1,4 +1,4 @@
-package com.example.johanboqvist.myproject;
+package com.example.johanboqvist.myproject.Misc;
 
 import android.content.Context;
 import android.hardware.Sensor;

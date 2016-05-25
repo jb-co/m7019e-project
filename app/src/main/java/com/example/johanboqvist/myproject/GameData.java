@@ -2,12 +2,14 @@ package com.example.johanboqvist.myproject;
 
 import android.content.Context;
 
-import com.example.johanboqvist.myproject.Mob.Circler;
-import com.example.johanboqvist.myproject.Mob.Coin;
-import com.example.johanboqvist.myproject.Mob.Mob;
-import com.example.johanboqvist.myproject.Mob.Player;
-import com.example.johanboqvist.myproject.Mob.Randomer;
-import com.example.johanboqvist.myproject.Mob.Slider;
+import com.example.johanboqvist.myproject.Entity.Circler;
+import com.example.johanboqvist.myproject.Entity.Coin;
+import com.example.johanboqvist.myproject.Entity.Mob;
+import com.example.johanboqvist.myproject.Entity.Player;
+import com.example.johanboqvist.myproject.Entity.Randomer;
+import com.example.johanboqvist.myproject.Entity.Slider;
+import com.example.johanboqvist.myproject.Misc.Globals;
+
 
 import java.util.ArrayList;
 
@@ -16,9 +18,11 @@ import java.util.ArrayList;
  */
 public class GameData {
 
-    public final static int TILE_SIZE = 96;
-    public final static int MAP_WIDTH = 24;
-    public final static int MAP_HEIGHT = 8;
+    public static int MAP_WIDTH = 40;
+    public static int MAP_HEIGHT = 20;
+    public float scrollX = 0.f;
+    public float scrollY = 0.f;
+
     public final static int[] LEVELS = {
             R.raw.level1
 
@@ -28,6 +32,7 @@ public class GameData {
 
     public int coins;
     public int collected = 0;
+    private int points = 0;
 
     public ArrayList<Integer> map;
     public ArrayList<Mob> npcs;
@@ -37,8 +42,19 @@ public class GameData {
 
     public GameData(Context context){
         this.context = context;
+    }
 
-        player = new Player(TILE_SIZE * 10, TILE_SIZE * 4);
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public void addPoints(int increase){
+        this.points += increase;
+        if(this.points < 0) this.points = 0;
     }
 
     public void loadLevel(int level){
@@ -51,6 +67,8 @@ public class GameData {
         this.coins = 0;
         this.collected = 0;
 
+        player = new Player(Globals.TILE_WIDTH * 10, Globals.TILE_HEIGHT * 4);
+
         loadNPCs();
     }
 
@@ -62,14 +80,19 @@ public class GameData {
             for (int x = 0; x < MAP_WIDTH; x++) {
 
                 if(map.get(x + y * MAP_WIDTH) == 'g'){
-                    npcs.add(new Slider(x * TILE_SIZE, y * TILE_SIZE));
+                    npcs.add(new Slider(x * Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT));
                 }  else if(map.get(x + y * MAP_WIDTH) == 'c'){
-                    npcs.add(new Circler(x * TILE_SIZE, y * TILE_SIZE));
+                    npcs.add(new Circler(x * Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT));
                 }   else if(map.get(x + y * MAP_WIDTH) == 'r'){
-                    npcs.add(new Randomer(x * TILE_SIZE, y * TILE_SIZE));
+                    npcs.add(new Randomer(x * Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT));
                 } else if(map.get(x + y * MAP_WIDTH) == 'z'){
                     this.coins++;
-                    npcs.add(new Coin(x * TILE_SIZE, y * TILE_SIZE));
+                    npcs.add(new Coin(x * Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT));
+                } else if(map.get(x + y * MAP_WIDTH) == 'p'){
+                    int w = (int)((MAP_WIDTH/2) * Globals.TILE_WIDTH);
+                    int h = (int)((MAP_HEIGHT/2) * Globals.TILE_HEIGHT);
+                    scrollX = -(w/2 - x) + 2 * Globals.TILE_WIDTH;
+                    scrollY = -(h/2 - y) + 2 * Globals.TILE_HEIGHT;
                 }
 
             }

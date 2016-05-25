@@ -1,9 +1,9 @@
-package com.example.johanboqvist.myproject.Mob;
+package com.example.johanboqvist.myproject.Entity;
 
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-import com.example.johanboqvist.myproject.SurfaceActivity;
+import com.example.johanboqvist.myproject.Misc.Globals;
 
 /**
  * Created by johanboqvist on 20/05/16.
@@ -11,6 +11,7 @@ import com.example.johanboqvist.myproject.SurfaceActivity;
 public class Player extends Mob {
 
     private int offsetY = 1;
+
 
     public Player(float x, float y) {
         super(x, y);
@@ -20,6 +21,7 @@ public class Player extends Mob {
 
     @Override
     public void update(double delta) {
+
 
         frameCounter++;
 
@@ -41,7 +43,7 @@ public class Player extends Mob {
         return new Rect(frame * 16, 16*offsetY, frame * 16 + 16, 16*offsetY + 16);
     }
 
-    public RectF getRect(){ return new RectF(x, y, x + SurfaceActivity.TILE_SIZE, y + SurfaceActivity.TILE_SIZE); }
+    public RectF getRect(){ return new RectF(x, y, x + Globals.TILE_WIDTH, y + Globals.TILE_HEIGHT); }
 
     @Override
     public void handleCollision() {

@@ -1,4 +1,4 @@
-package com.example.johanboqvist.myproject;
+package com.example.johanboqvist.myproject.Misc;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

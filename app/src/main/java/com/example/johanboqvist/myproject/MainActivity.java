@@ -9,41 +9,49 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.johanboqvist.myproject.Misc.Globals;
+import com.example.johanboqvist.myproject.Misc.HighScoreManager;
+import com.example.johanboqvist.myproject.Misc.MusicManager;
+
 public class MainActivity extends AppCompatActivity {
 
     private HighScoreManager highScoreManager = new HighScoreManager();
     private TextView textHighScore;
     private String result;
+    private Button btnStart;
+    private Button btnSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        MusicManager.createPlayer(this);
 
         textHighScore = (TextView) findViewById(R.id.textScore);
-        getHighScore();
 
-
-        Button btn = (Button) findViewById(R.id.button);
-        btn.setOnClickListener(new View.OnClickListener()
+        //Start game button
+       btnStart = (Button) findViewById(R.id.button);
+        btnStart.setOnClickListener(new View.OnClickListener()
 
         {
             @Override
             public void onClick(View v) {
                 Intent activity = new Intent(MainActivity.this, SurfaceActivity.class);
+                Globals.homePressed = false;
                 startActivity(activity);
-                }
-            });
+            }
+        });
 
-        Button btnSettings = (Button) findViewById(R.id.btnSettings);
+        // Settings button
+        btnSettings = (Button) findViewById(R.id.btnSettings);
             btnSettings.setOnClickListener(new View.OnClickListener()
 
             {
                 @Override
                 public void onClick(View v) {
-                    Intent activity = new Intent(MainActivity.this, EndGameActivity.class);
+                    Intent activity = new Intent(MainActivity.this, SettingsActivity.class);
+                    Globals.homePressed = false;
                     startActivity(activity);
                 }
             });
@@ -54,7 +62,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        Globals.homePressed = true;
         getHighScore();
+        MusicManager.startMusic();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if(Globals.homePressed){
+            MusicManager.stopMusic();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        MusicManager.stopMusic();
+        MusicManager.releasePlayer();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
     }
 
     private final Handler messageHandler = new Handler() {
@@ -72,4 +104,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }.start();
     }
+
 }

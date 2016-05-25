@@ -1,6 +1,8 @@
-package com.example.johanboqvist.myproject.Mob;
+package com.example.johanboqvist.myproject.Entity;
 
 import android.graphics.Rect;
+
+import com.example.johanboqvist.myproject.Misc.Globals;
 
 import java.util.Random;
 
@@ -12,11 +14,14 @@ public class Randomer extends Mob {
     private Random random = new Random();
     private int walkLength = 24;
     private int walkCounter = 0;
+    private float ySpeed;
+    private float xSpeed;
 
     public Randomer(float x, float y) {
         super(x, y);
 
-        this.speed = 100.0f;
+        ySpeed = 100f * Globals.SCALE_HEIGHT;
+        xSpeed = 100f * Globals.SCALE_WIDTH;
     }
 
     @Override
@@ -39,19 +44,19 @@ public class Randomer extends Mob {
         switch(this.dir){
 
             case 0: {
-                this.y -= speed * delta;
+                this.y -= ySpeed * delta;
                 break;
             }
             case 1: {
-                this.x += speed * delta;
+                this.x += xSpeed * delta;
                 break;
             }
             case 2: {
-                this.y += speed * delta;
+                this.y += ySpeed * delta;
                 break;
             }
             case 3: {
-                this.x -= speed * delta;
+                this.x -= xSpeed * delta;
                 break;
             }
 

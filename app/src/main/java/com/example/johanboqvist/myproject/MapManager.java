@@ -1,7 +1,8 @@
 package com.example.johanboqvist.myproject;
 
 import android.content.Context;
-import android.util.Log;
+
+import com.example.johanboqvist.myproject.Misc.FileManager;
 
 import java.util.ArrayList;
 

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.johanboqvist.myproject.MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
 
     <TextView
         android:layout_width="match_parent"
@@ -12,26 +13,35 @@
         android:text="Game Title!"
         android:id="@+id/textView"
         android:textAlignment="center"
-        android:textSize="48dp" />
+        android:textSize="32dp"
+        android:gravity="center_horizontal" />
 
-    <Button
-        android:layout_width="174dp"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start"
-        android:id="@+id/button"
-        android:layout_gravity="center_horizontal" />
+        android:textAlignment="center"
+        android:gravity="center_horizontal">
 
-    <Button
-        android:layout_width="174dp"
-        android:layout_height="wrap_content"
-        android:text="Settings"
-        android:id="@+id/btnSettings"
-        android:layout_above="@+id/textScore"
-        android:layout_gravity="center_horizontal" />
+        <Button
+            android:layout_width="174dp"
+            android:layout_height="wrap_content"
+            android:text="Start"
+            android:id="@+id/button"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="174dp"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:id="@+id/btnSettings"
+            android:layout_above="@+id/textScore"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
 
     <TextView
         android:layout_width="174dp"
-        android:layout_height="41dp"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Highscore"
         android:id="@+id/textView2"
@@ -42,7 +52,7 @@
 
     <TextView
         android:layout_width="174dp"
-        android:layout_height="147dp"
+        android:layout_height="match_parent"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Loading highscore..."
         android:id="@+id/textScore"

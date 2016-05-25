@@ -1,9 +1,8 @@
-package com.example.johanboqvist.myproject.Mob;
+package com.example.johanboqvist.myproject.Entity;
 
 import android.graphics.Rect;
-import android.util.Log;
 
-import com.example.johanboqvist.myproject.MapManager;
+import com.example.johanboqvist.myproject.Misc.Globals;
 
 /**
  * Created by johanboqvist on 20/05/16.
@@ -14,7 +13,7 @@ public class Slider extends Mob {
     public Slider(float x, float y) {
         super(x, y);
 
-        this.speed = 172f;
+        this.speed = 172f * Globals.SCALE_HEIGHT;
     }
 
     @Override

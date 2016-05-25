@@ -1,8 +1,6 @@
-package com.example.johanboqvist.myproject.Mob;
+package com.example.johanboqvist.myproject.Entity;
 
 import android.graphics.Rect;
-
-import com.example.johanboqvist.myproject.Entity;
 
 /**
  * Created by johanboqvist on 23/05/16.

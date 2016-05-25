@@ -9,11 +9,16 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.johanboqvist.myproject.Misc.Globals;
+import com.example.johanboqvist.myproject.Misc.HighScoreManager;
+import com.example.johanboqvist.myproject.Misc.MusicManager;
 
 public class EndGameActivity extends AppCompatActivity {
 
@@ -53,6 +58,45 @@ public class EndGameActivity extends AppCompatActivity {
             }
         }.start();
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if(!Globals.backPressed) {
+            MusicManager.stopMusic();
+        }
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Globals.backPressed = false;
+        MusicManager.startMusic();
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Globals.backPressed = true;
+
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                //NavUtils.navigateUpFromSameTask(this);
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private final Handler messageHandler = new Handler() {
