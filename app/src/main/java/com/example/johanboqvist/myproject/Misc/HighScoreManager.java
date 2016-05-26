@@ -83,7 +83,7 @@ public class HighScoreManager {
 
     public void writeHighScore(String location){
         String str = "";
-        for(HighScoreEntry h : list.subList(0, 4)){
+        for(HighScoreEntry h : list.subList(0, 5)){
             str += h.name + "\n" + h.points + "\n";
         }
 

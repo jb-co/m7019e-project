@@ -1,16 +1,21 @@
 package com.example.johanboqvist.myproject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -131,25 +136,39 @@ public class EndGameActivity extends AppCompatActivity {
 
         //Name
         name = new EditText(this);
+        name.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+
+        //Max 10 character filter
+        InputFilter[] fa= new InputFilter[1];
+        fa[0] = new InputFilter.LengthFilter(10);
+        name.setFilters(fa);
+
         name.setHint("Enter your name:");
         params2.gravity = Gravity.CENTER_HORIZONTAL;
         name.setLayoutParams(params2);
+
+        //Make sure the textbox isn't empty
         name.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
-                if(TextUtils.isEmpty(name.getText())){
+                if (TextUtils.isEmpty(name.getText())) {
                     btn.setEnabled(false);
                 } else {
                     btn.setEnabled(true);
                 }
             }
         });
+
+
+
 
         linearLayout.addView(name);
 
