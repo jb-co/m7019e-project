@@ -45,9 +45,8 @@ public class SurfaceActivity extends AppCompatActivity {
 
     private double clock = 300;
     private boolean isRunning = false;
+    private boolean isNewGame = true;
     private SoundManager soundManager;
-
-
 
     private int currentLevel = 0;
 
@@ -55,14 +54,14 @@ public class SurfaceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        gameData = new GameData(getApplicationContext());
         final GameView gameView = new GameView(SurfaceActivity.this);
+
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sprites);
 
         sprites = Bitmap.createScaledBitmap(bitmap,
                 114, 164, false);
-
-
 
         accelerometer = new Accelerometer(this);
 
@@ -71,8 +70,6 @@ public class SurfaceActivity extends AppCompatActivity {
 
         soundManager = new SoundManager(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
-
 
     }
 
@@ -207,8 +204,11 @@ public class SurfaceActivity extends AppCompatActivity {
                     Globals.TILE_WIDTH = 96 * Globals.SCALE_WIDTH;//(int) Globals.CANVAS_WIDTH / 20;
                     Globals.TILE_HEIGHT = 96 * Globals.SCALE_HEIGHT;
 
-                    gameData = new GameData(getApplicationContext());
-                    gameData.loadLevel(GameData.LEVELS[currentLevel]);
+
+                    if(isNewGame){
+                        isNewGame = false;
+                        gameData.loadLevel(currentLevel);
+                    }
 
                     gameState = new Playing();
 
@@ -276,8 +276,6 @@ public class SurfaceActivity extends AppCompatActivity {
 
             int left = (int)(gameData.scrollX / Globals.TILE_WIDTH) ;
             int top = (int)(gameData.scrollY / Globals.TILE_HEIGHT);
-            //int w = (int)(Globals.CANVAS_WIDTH / Globals.TILE_SIZE) + Globals.TILE_SIZE;
-            //int h = (int)(Globals.CANVAS_HEIGHT / Globals.TILE_SIZE) + Globals.TILE_SIZE;
 
             for(int y = top; y < top + 13; y++) {
                 if(y < 0 || y > gameData.MAP_HEIGHT-1) continue;
@@ -309,6 +307,8 @@ public class SurfaceActivity extends AppCompatActivity {
 
 
             for(Mob mob : gameData.npcs){
+                if(mob.isOOB()) continue;
+
                 RectF r = new RectF(mob.getX() - gameData.scrollX, mob.getY() - gameData.scrollY,
                         mob.getX() + Globals.TILE_WIDTH - gameData.scrollX, mob.getY() + Globals.TILE_HEIGHT - gameData.scrollY);
                 canvas.drawBitmap(sprites, mob.getFrame(), r, null );
@@ -335,7 +335,9 @@ public class SurfaceActivity extends AppCompatActivity {
             while(i.hasNext()) {
                 Mob mob = i.next();
 
-                //insert check for out of bounds here!
+                mob.checkOutOfBounds(gameData.scrollX, gameData.scrollY);
+                if(mob.isOOB()) continue;
+
                 mob.update(delta);
 
                 if(isCollision(mob.getX(), mob.getY(), 0, 0)){
@@ -350,10 +352,7 @@ public class SurfaceActivity extends AppCompatActivity {
                         i.remove();
                     } else {             // player got hit by mob
                         soundManager.playSound(1, 1.0f);
-                        gameData.scrollX = 0;
-                        gameData.scrollY = 0;
-                        gameData.player.setX(10 * Globals.TILE_WIDTH);
-                        gameData.player.setY(6 * Globals.TILE_HEIGHT);
+                        gameData.resetPos();
                         gameData.addPoints(-10);
                         gameData.player.setDead(true);
 

@@ -31,4 +31,16 @@ public class Entity {
     public void setDead(boolean isDead) {
         this.isDead = isDead;
     }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+
+
+
 }

@@ -2,6 +2,8 @@ package com.example.johanboqvist.myproject.Entity;
 
 import android.graphics.Rect;
 
+import com.example.johanboqvist.myproject.Misc.Globals;
+
 /**
  * Created by johanboqvist on 20/05/16.
  */
@@ -10,6 +12,7 @@ public abstract class Mob extends Entity {
     protected int dir = 1;
     protected float prevX, prevY;
     protected float speed = 1;
+    protected boolean isOOB = false;
 
 
 
@@ -39,19 +42,25 @@ public abstract class Mob extends Entity {
         this.y = y;
     }
 
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public float getSpeed() {
-        return speed;
-    }
-
     public abstract Rect getFrame();
 
     public abstract void handleCollision();
+
+    public void setOOB(boolean isOOB){
+        this.isOOB = isOOB;
+    }
+
+    public boolean isOOB(){
+        return this.isOOB;
+    }
+
+    public void checkOutOfBounds(float scrollX, float scrollY){
+        //out of bounds check
+        if(x - scrollX < -Globals.TILE_WIDTH || x - scrollX > Globals.CANVAS_WIDTH
+                || y - scrollY < -Globals.TILE_HEIGHT || y - scrollY > Globals.CANVAS_HEIGHT){
+            setOOB(true);
+        } else {
+            setOOB(false);
+        }
+    }
 }

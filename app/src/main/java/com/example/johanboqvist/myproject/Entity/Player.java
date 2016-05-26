@@ -11,6 +11,7 @@ import com.example.johanboqvist.myproject.Misc.Globals;
 public class Player extends Mob {
 
     private int offsetY = 1;
+    private float startX, startY;
 
 
     public Player(float x, float y) {
@@ -48,6 +49,19 @@ public class Player extends Mob {
     @Override
     public void handleCollision() {
 
+    }
+
+    public void setStartPos(float x, float y){
+        this.startX = x;
+        this.startY = y;
+    }
+
+    public float getStartX() {
+        return startX;
+    }
+
+    public float getStartY() {
+        return startY;
     }
 
     public void setDir(int dir){

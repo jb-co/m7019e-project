@@ -24,6 +24,7 @@ public class GameData {
     public float scrollY = 0.f;
 
     public final static int[] LEVELS = {
+            R.raw.level2,
             R.raw.level1
 
     };
@@ -60,7 +61,7 @@ public class GameData {
     public void loadLevel(int level){
 
         mapManager = new MapManager(context);
-        mapManager.loadMap(level);
+        mapManager.loadMap(LEVELS[level]);
 
         map = mapManager.getMap();
 
@@ -80,7 +81,9 @@ public class GameData {
             for (int x = 0; x < MAP_WIDTH; x++) {
 
                 if(map.get(x + y * MAP_WIDTH) == 'g'){
-                    npcs.add(new Slider(x * Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT));
+                    npcs.add(new Slider(x * Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT, 0));
+                } else if(map.get(x + y * MAP_WIDTH) == 'h'){
+                    npcs.add(new Slider(x * Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT, 1));
                 }  else if(map.get(x + y * MAP_WIDTH) == 'c'){
                     npcs.add(new Circler(x * Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT));
                 }   else if(map.get(x + y * MAP_WIDTH) == 'r'){
@@ -91,11 +94,17 @@ public class GameData {
                 } else if(map.get(x + y * MAP_WIDTH) == 'p'){
                     int w = (int)((MAP_WIDTH/2) * Globals.TILE_WIDTH);
                     int h = (int)((MAP_HEIGHT/2) * Globals.TILE_HEIGHT);
-                    scrollX = -(w/2 - x) + 2 * Globals.TILE_WIDTH;
-                    scrollY = -(h/2 - y) + 2 * Globals.TILE_HEIGHT;
+                    scrollX = x * Globals.TILE_WIDTH - player.getX();
+                    scrollY = y * Globals.TILE_HEIGHT - player.getY();
+                    player.setStartPos(scrollX, scrollY);
                 }
 
             }
         }
+    }
+
+    public void resetPos(){
+        scrollX = player.getStartX();
+        scrollY = player.getStartY();
     }
 }

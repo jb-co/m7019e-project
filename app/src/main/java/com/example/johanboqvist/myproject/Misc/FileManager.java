@@ -44,7 +44,7 @@ public class FileManager {
     }
 
     public void openFile(int resource){
-        br = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(R.raw.level1)));
+        br = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(resource)));
     }
 
     public void closeFile() {
