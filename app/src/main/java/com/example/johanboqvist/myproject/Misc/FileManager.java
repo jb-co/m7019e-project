@@ -17,17 +17,14 @@ import java.util.ArrayList;
  */
 public class FileManager {
 
-    private Context context;
-    private File mapFile = null;
-    private BufferedReader br;
+    private Context         context;
+    private BufferedReader  br;
 
     public FileManager(Context context){
         this.context = context;
     }
 
     public void readFile(int resource) {
-
-
 
         ArrayList <Character> outArray = new ArrayList<Character>();
         try {
@@ -68,6 +65,5 @@ public class FileManager {
             }
         }
         return -1;
-
     }
 }

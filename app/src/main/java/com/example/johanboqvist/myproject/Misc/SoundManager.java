@@ -11,9 +11,9 @@ import com.example.johanboqvist.myproject.R;
  */
 public class SoundManager {
 
-    private SoundPool soundPool;
-    private int sounds[] = new int[2];
-    public static boolean SOUND = true;
+    private SoundPool       soundPool;
+    private int             sounds[] = new int[2];
+    public static boolean   SOUND = true;
 
     public SoundManager(Context context){
 

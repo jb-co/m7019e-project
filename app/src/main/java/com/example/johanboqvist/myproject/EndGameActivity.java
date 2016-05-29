@@ -27,17 +27,15 @@ import com.example.johanboqvist.myproject.Misc.MusicManager;
 
 public class EndGameActivity extends AppCompatActivity {
 
-    private TextView title;
-    private TextView textPoints;
-    private EditText name;
-    private Button btn;
-    private LinearLayout linearLayout;
-    private HighScoreManager highScoreManager = new HighScoreManager();
-    private int position;
-    private int points;
+    private TextView            title;
+    private TextView            textPoints;
+    private EditText            name;
+    private Button              btn;
+    private LinearLayout        linearLayout;
+    private HighScoreManager    highScoreManager = new HighScoreManager();
+    private int                 position;
+    private int                 points;
 
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_end_game);
@@ -48,7 +46,6 @@ public class EndGameActivity extends AppCompatActivity {
         textPoints = (TextView) findViewById(R.id.textPoints);
         textPoints.setText("Points: "+points);
 
-
         new Thread(){
             public void run() {
                 highScoreManager.getHighScore("http://52.49.26.113/highscore.txt");
@@ -58,7 +55,6 @@ public class EndGameActivity extends AppCompatActivity {
                 } else {
                     messageHandler.sendEmptyMessage(-1);
                 }
-
 
             }
         }.start();
@@ -72,8 +68,6 @@ public class EndGameActivity extends AppCompatActivity {
         if(!Globals.backPressed) {
             MusicManager.stopMusic();
         }
-
-
     }
 
     @Override
@@ -82,15 +76,12 @@ public class EndGameActivity extends AppCompatActivity {
 
         Globals.backPressed = false;
         MusicManager.startMusic();
-
-
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         Globals.backPressed = true;
-
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -115,7 +106,6 @@ public class EndGameActivity extends AppCompatActivity {
                     finish();
                 } break;
             }
-
         }
     };
 
@@ -167,9 +157,6 @@ public class EndGameActivity extends AppCompatActivity {
             }
         });
 
-
-
-
         linearLayout.addView(name);
 
         btn = new Button(this);
@@ -193,9 +180,6 @@ public class EndGameActivity extends AppCompatActivity {
         });
 
         linearLayout.addView(btn);
-
-
-
     }
 }
 

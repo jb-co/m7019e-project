@@ -45,8 +45,6 @@ public class SettingsActivity extends AppCompatActivity {
                 SoundManager.SOUND = isChecked;
             }
         });
-
-
     }
 
     @Override
@@ -56,8 +54,6 @@ public class SettingsActivity extends AppCompatActivity {
         if(!Globals.backPressed) {
             MusicManager.stopMusic();
         }
-
-
     }
 
     @Override
@@ -69,15 +65,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         switchMusic.setChecked(MusicManager.MUSIC);
         switchSound.setChecked(SoundManager.SOUND);
-
-
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         Globals.backPressed = true;
-
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -90,6 +83,4 @@ public class SettingsActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
 }

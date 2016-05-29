@@ -74,7 +74,6 @@ public class HighScoreManager {
         } else {
             return -1;
         }
-
     }
 
     public void addEntry(int pos, String name, int points){
@@ -113,7 +112,6 @@ public class HighScoreManager {
     public ArrayList<HighScoreEntry> getList() {
         return list;
     }
-
 
     private class HighScoreEntry {
         public String name;

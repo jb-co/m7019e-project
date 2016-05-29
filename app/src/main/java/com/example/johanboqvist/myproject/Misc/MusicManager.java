@@ -10,8 +10,8 @@ import com.example.johanboqvist.myproject.R;
  */
 public class MusicManager {
 
-    public static MediaPlayer player;
-    public static boolean MUSIC = true;
+    public static MediaPlayer   player;
+    public static boolean       MUSIC = true;
 
     public static void createPlayer(Context context) {
 

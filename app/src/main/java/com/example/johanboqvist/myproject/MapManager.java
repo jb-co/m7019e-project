@@ -11,8 +11,8 @@ import java.util.ArrayList;
  */
 public class MapManager {
 
-    private ArrayList<Integer> map;
-    private Context context;
+    private ArrayList<Integer>  map;
+    private Context             context;
 
     public MapManager(Context context){
         this.context = context;

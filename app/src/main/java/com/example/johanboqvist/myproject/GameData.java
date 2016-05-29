@@ -18,28 +18,26 @@ import java.util.ArrayList;
  */
 public class GameData {
 
-    public static int MAP_WIDTH = 40;
-    public static int MAP_HEIGHT = 20;
-    public float scrollX = 0.f;
-    public float scrollY = 0.f;
+    public static int           MAP_WIDTH = 40;
+    public static int           MAP_HEIGHT = 20;
+    public float                scrollX = 0.f;
+    public float                scrollY = 0.f;
 
-    public final static int[] LEVELS = {
+    public final static int[]   LEVELS = {
             R.raw.level2,
             R.raw.level1
-
     };
 
-    public Player player;
+    public Player               player;
+    public int                  coins;
+    public int                  collected = 0;
+    private int                 points = 0;
 
-    public int coins;
-    public int collected = 0;
-    private int points = 0;
+    public ArrayList<Integer>   map;
+    public ArrayList<Mob>       npcs;
 
-    public ArrayList<Integer> map;
-    public ArrayList<Mob> npcs;
-
-    private MapManager mapManager;
-    private Context context;
+    private MapManager          mapManager;
+    private Context             context;
 
     public GameData(Context context){
         this.context = context;

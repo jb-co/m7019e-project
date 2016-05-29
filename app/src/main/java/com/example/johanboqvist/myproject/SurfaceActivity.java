@@ -32,23 +32,22 @@ import com.example.johanboqvist.myproject.Misc.SoundManager;
 
 import java.util.Iterator;
 
-
 public class SurfaceActivity extends AppCompatActivity {
 
-    static Bitmap sprites;
+    static Bitmap           sprites;
 
-    private Accelerometer accelerometer;
-    private GameData gameData;
+    private Accelerometer   accelerometer;
+    private GameData        gameData;
 
-    private GameState gameState;
-    private boolean touched = false;
+    private GameState       gameState;
+    private boolean         touched = false;
 
-    private double clock = 300;
-    private boolean isRunning = false;
-    private boolean isNewGame = true;
-    private SoundManager soundManager;
+    private double          clock = 300;
+    private boolean         isRunning = false;
+    private boolean         isNewGame = true;
+    private SoundManager    soundManager;
 
-    private int currentLevel = 0;
+    private int             currentLevel = 0;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +55,6 @@ public class SurfaceActivity extends AppCompatActivity {
 
         gameData = new GameData(getApplicationContext());
         final GameView gameView = new GameView(SurfaceActivity.this);
-
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sprites);
 
@@ -70,10 +68,8 @@ public class SurfaceActivity extends AppCompatActivity {
 
         soundManager = new SoundManager(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
     }
 
-    @Override
     protected void onPause() {
         super.onPause();
 
@@ -84,17 +80,13 @@ public class SurfaceActivity extends AppCompatActivity {
         isRunning = false;
     }
 
-    @Override
     protected void onResume() {
         super.onResume();
 
         Globals.backPressed = false;
         MusicManager.startMusic();
-
-
     }
 
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
         Globals.backPressed = true;
@@ -163,9 +155,6 @@ public class SurfaceActivity extends AppCompatActivity {
         }
         return false;
     }
-
-
-
 
     private class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -248,7 +237,6 @@ public class SurfaceActivity extends AppCompatActivity {
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
         }
 
         @Override
@@ -260,7 +248,6 @@ public class SurfaceActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
     }
 
     private abstract class GameState {
@@ -304,7 +291,6 @@ public class SurfaceActivity extends AppCompatActivity {
 
                 }
             }
-
 
             for(Mob mob : gameData.npcs){
                 if(mob.isOOB()) continue;
@@ -366,9 +352,7 @@ public class SurfaceActivity extends AppCompatActivity {
         }
     }
 
-
     private class LevelTransition extends GameState {
-
 
         private int bonus;
 
@@ -397,12 +381,8 @@ public class SurfaceActivity extends AppCompatActivity {
             x = (canvas.getWidth() / 2) - (bounds.width() / 2);
             y = (canvas.getHeight() / 2) - (bounds.height() / 2);
             canvas.drawText(points, x, y + 64*Globals.SCALE_HEIGHT, paint);
-
-
-
         }
 
-        @Override
         public void update(double delta) {
 
             if(touched){
@@ -425,7 +405,5 @@ public class SurfaceActivity extends AppCompatActivity {
                 }
             }
         }
-
-
     }
 }

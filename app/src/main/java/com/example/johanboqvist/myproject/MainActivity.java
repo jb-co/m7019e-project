@@ -15,11 +15,11 @@ import com.example.johanboqvist.myproject.Misc.MusicManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    private HighScoreManager highScoreManager = new HighScoreManager();
-    private TextView textHighScore;
-    private String result;
-    private Button btnStart;
-    private Button btnSettings;
+    private HighScoreManager    highScoreManager = new HighScoreManager();
+    private TextView            textHighScore;
+    private String              result;
+    private Button              btnStart;
+    private Button              btnSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
     protected void onResume() {
         super.onResume();
 
