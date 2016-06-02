@@ -7,7 +7,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 /**
- * Created by johanboqvist on 10/05/16.
+ * Accelerometer handles the accelereometer sensor
  */
 public class Accelerometer implements SensorEventListener {
 
@@ -15,7 +15,7 @@ public class Accelerometer implements SensorEventListener {
     private Sensor          mAccelerometer;
     private Context         context;
     private float           x = 0.f, y = 0.f, z = 0.f;
-    float                   grav = 9.81f;
+    private float           grav = 9.81f;
 
     public Accelerometer(Context c){
         // Instantiate SensorManager
@@ -32,6 +32,7 @@ public class Accelerometer implements SensorEventListener {
         x = event.values[0];
         y = event.values[1];
 
+        /** z is never really used **/
         grav = alpha * grav + (1 - alpha) * event.values[2];
         z = event.values[2] - grav;
     }

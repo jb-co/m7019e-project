@@ -5,13 +5,13 @@ import android.graphics.Rect;
 import com.example.johanboqvist.myproject.Misc.Globals;
 
 /**
- * Created by johanboqvist on 20/05/16.
+ *  Entity Circler. Bird which circles with radius r.
  */
-public class Circler extends Mob {
+public class Circler extends Entity {
 
-    float rotation = 0;
-    float centerX, centerY;
-    int r;
+    private float   rotation = 0;
+    private float   centerX, centerY;
+    private int     r;
 
     public Circler(float x, float y) {
         super(x, y);
@@ -39,7 +39,6 @@ public class Circler extends Mob {
         }
     }
 
-    @Override
     public void handleCollision() {
 
     }

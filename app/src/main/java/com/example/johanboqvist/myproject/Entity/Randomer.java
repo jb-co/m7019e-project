@@ -9,7 +9,7 @@ import java.util.Random;
 /**
  * Created by johanboqvist on 20/05/16.
  */
-public class Randomer extends Mob {
+public class Randomer extends Entity {
 
     private Random random = new Random();
     private int walkLength = 24;

@@ -7,7 +7,7 @@ import com.example.johanboqvist.myproject.Misc.Globals;
 /**
  * Created by johanboqvist on 20/05/16.
  */
-public class Slider extends Mob {
+public class Slider extends Entity {
 
 
     private int ori; //up-down = 0 or left-right = 1

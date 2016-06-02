@@ -7,13 +7,13 @@ import android.media.SoundPool;
 import com.example.johanboqvist.myproject.R;
 
 /**
- * Created by johanboqvist on 25/05/16.
+ * Holds the SoundPool object and handles playing of sound effects
  */
 public class SoundManager {
 
     private SoundPool       soundPool;
     private int             sounds[] = new int[2];
-    public static boolean   SOUND = true;
+    public static boolean   SOUND = true;  //is sound set to On in settings?
 
     public SoundManager(Context context){
 

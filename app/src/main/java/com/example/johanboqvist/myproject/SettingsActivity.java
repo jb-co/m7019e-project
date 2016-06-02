@@ -10,6 +10,9 @@ import com.example.johanboqvist.myproject.Misc.Globals;
 import com.example.johanboqvist.myproject.Misc.MusicManager;
 import com.example.johanboqvist.myproject.Misc.SoundManager;
 
+/**
+ * Settings activity. Keeps track of changes of two switches for sound and music.
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     private Switch switchMusic;
@@ -23,6 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
         switchMusic = (Switch) findViewById(R.id.switchMusic);
         switchSound = (Switch) findViewById(R.id.switchSound);
 
+        //Changes to music settings!
         switchMusic.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -39,6 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        //Changes to sound settings!
         switchSound.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

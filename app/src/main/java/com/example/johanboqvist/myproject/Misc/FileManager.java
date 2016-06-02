@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
- * Created by johanboqvist on 12/05/16.
+ * FileManager handles opening and reading from a file
  */
 public class FileManager {
 
@@ -24,26 +24,17 @@ public class FileManager {
         this.context = context;
     }
 
-    public void readFile(int resource) {
-
-        ArrayList <Character> outArray = new ArrayList<Character>();
-        try {
-            int value = 0;
-
-            while((value = br.read()) != -1){
-                outArray.add((char)value);
-            }
-
-        } catch (IOException e) {
-            Log.i("ioexception", "ioexception");
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * Open a file
+     * @param resource resource id of file to be opened
+     */
     public void openFile(int resource){
         br = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(resource)));
     }
 
+    /**
+     * Close currently opened file
+     */
     public void closeFile() {
         try {
             br.close();
@@ -52,6 +43,10 @@ public class FileManager {
         }
     }
 
+    /**
+     * Reads a value frome file. Returns -1 if end of file.
+     * @return
+     */
     public int readValue(){
         int value;
 

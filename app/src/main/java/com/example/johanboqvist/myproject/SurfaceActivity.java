@@ -9,12 +9,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.SoundPool;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +20,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import com.example.johanboqvist.myproject.Entity.Mob;
+import com.example.johanboqvist.myproject.Entity.Entity;
 import com.example.johanboqvist.myproject.Entity.Player;
 import com.example.johanboqvist.myproject.Misc.Accelerometer;
 import com.example.johanboqvist.myproject.Misc.Globals;
@@ -32,9 +29,12 @@ import com.example.johanboqvist.myproject.Misc.SoundManager;
 
 import java.util.Iterator;
 
+/**
+ * Surface activity is the ingame class which holds the SurfaceView and the game loop
+ */
 public class SurfaceActivity extends AppCompatActivity {
 
-    static Bitmap           sprites;
+    static Bitmap           sprites;  //the spritesheet in sprites.png
 
     private Accelerometer   accelerometer;
     private GameData        gameData;
@@ -66,6 +66,7 @@ public class SurfaceActivity extends AppCompatActivity {
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.frame);
         relativeLayout.addView(gameView);
 
+        //Load the sound pool
         soundManager = new SoundManager(this);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
@@ -73,6 +74,7 @@ public class SurfaceActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
+        //make sure to not stop the music on back press.
         if(!Globals.backPressed) {
             MusicManager.stopMusic();
         }
@@ -110,15 +112,22 @@ public class SurfaceActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * movement of the accelerometer
+     *
+     * @param delta the delta
+     */
     public synchronized void move(double delta) {
 
         float speed = 120f;
         float moveX = accelerometer.getY() * speed * (float)delta * Globals.SCALE_WIDTH;
         float moveY = accelerometer.getX() * speed * (float)delta * Globals.SCALE_HEIGHT;
-        Player player = gameData.player;
+        float scrollX = gameData.getScrollX();
+        float scrollY = gameData.getScrollY();
+        Player player = gameData.getPlayer();
 
-        float mapX = (player.getX() + gameData.scrollX);
-        float mapY = (player.getY() + gameData.scrollY);
+        float mapX = (player.getX() + scrollX);
+        float mapY = (player.getY() + scrollY);
 
         player.update(delta);
 
@@ -129,14 +138,25 @@ public class SurfaceActivity extends AppCompatActivity {
         }
 
         if(!isCollision(mapX, mapY, moveX, 0)) {
-            gameData.scrollX += moveX;
+            gameData.addScrollX(moveX);
         }
         if(!isCollision(mapX, mapY, 0, moveY)) {
-            gameData.scrollY += moveY;
+            gameData.addScrollY(moveY);
         }
     }
 
+    /**
+     * Checks for collision on the map
+     *
+     * @param posX  the current pos x
+     * @param posY  the current pos y
+     * @param moveX the movement done in x
+     * @param moveY the movement done in y
+     * @return the boolean
+     */
     public boolean isCollision(float posX, float posY, float moveX, float moveY){
+
+        //check all four corners of the entity rect.
         for(int i = 0; i < 4; i++) {
 
             int newX = (int)((posX + (i%2)*Globals.TILE_WIDTH + moveX) / Globals.TILE_WIDTH);
@@ -149,6 +169,7 @@ public class SurfaceActivity extends AppCompatActivity {
                 return true;
             }
 
+            // '1' is solid wall
             if (gameData.map.get(newX + newY * gameData.MAP_WIDTH) == '1') {
                 return true;
             }
@@ -156,6 +177,9 @@ public class SurfaceActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * SurfaceView class holds the canvas to draw on and the gameloop
+     */
     private class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         private Thread gameThread = null;
@@ -167,6 +191,7 @@ public class SurfaceActivity extends AppCompatActivity {
             surfaceHolder = getHolder();
             surfaceHolder.addCallback(this);
 
+            //this is for touch events to transition between stages
             this.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -179,21 +204,24 @@ public class SurfaceActivity extends AppCompatActivity {
 
             isRunning = true;
             this.gameThread = new Thread(new Runnable() {
-                @Override
+
                 public void run() {
 
                     Canvas canvas;
 
+                    /** These globals are for scaling for different screen sizes!
+                     * Reference width is 1794.0f and height is 1017.0f (Nexus 5x).
+                     * **/
                     Globals.CANVAS_HEIGHT = getHeight();
                     Globals.CANVAS_WIDTH = getWidth();
 
                     Globals.SCALE_WIDTH =  Globals.CANVAS_WIDTH / 1794.0f;
                     Globals.SCALE_HEIGHT =  Globals.CANVAS_HEIGHT / 1017.0f;
 
-                    Globals.TILE_WIDTH = 96 * Globals.SCALE_WIDTH;//(int) Globals.CANVAS_WIDTH / 20;
+                    Globals.TILE_WIDTH = 96 * Globals.SCALE_WIDTH;
                     Globals.TILE_HEIGHT = 96 * Globals.SCALE_HEIGHT;
 
-
+                    /** Only load the level if surface is created from a new game **/
                     if(isNewGame){
                         isNewGame = false;
                         gameData.loadLevel(currentLevel);
@@ -204,14 +232,17 @@ public class SurfaceActivity extends AppCompatActivity {
                     long now, lastTime = System.nanoTime();
                     double delta = 0;
 
+                    /** main game loop! **/
                     while (isRunning) {
                         now = System.nanoTime();
                         delta = (now - lastTime) / 1000000000.0;
                         lastTime = now;
 
+                        /** update entities. movement is based on delta time */
                         gameState.update(delta);
 
-                        if(gameData.collected == gameData.coins){
+                        /** check if all coins have been collected */
+                        if(gameData.getCollected() == gameData.getCoins()){
                             gameState = new LevelTransition();
                         }
 
@@ -220,7 +251,7 @@ public class SurfaceActivity extends AppCompatActivity {
 
                         canvas = surfaceHolder.lockCanvas();
 
-                        /* draw here ! */
+                        /** draw here ! **/
                         if (null != canvas) {
                             gameState.render(canvas);
                             surfaceHolder.unlockCanvasAndPost(canvas);
@@ -250,20 +281,29 @@ public class SurfaceActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * The GameState classes decide what is done in the game loop during rendering and updates
+     */
     private abstract class GameState {
         public abstract void render(Canvas canvas);
         public abstract void update(double delta);
     }
 
+    /**
+     * Playing
+     */
     private class Playing extends GameState{
 
-        @Override
         public void render(Canvas canvas) {
             canvas.drawColor(Color.BLACK);
 
-            int left = (int)(gameData.scrollX / Globals.TILE_WIDTH) ;
-            int top = (int)(gameData.scrollY / Globals.TILE_HEIGHT);
+            float scrollX = gameData.getScrollX();
+            float scrollY = gameData.getScrollY();
 
+            int left = (int)(scrollX / Globals.TILE_WIDTH);
+            int top = (int)(scrollY / Globals.TILE_HEIGHT);
+
+            /**draw the map **/
             for(int y = top; y < top + 13; y++) {
                 if(y < 0 || y > gameData.MAP_HEIGHT-1) continue;
                 for(int x = left; x < left + 22; x++) {
@@ -273,66 +313,78 @@ public class SurfaceActivity extends AppCompatActivity {
                     if((x + y * gameData.MAP_WIDTH) >= gameData.map.size() || (x+y*gameData.MAP_WIDTH < 0)) continue;
                     int c = gameData.map.get(x + y * gameData.MAP_WIDTH);
 
-                    int offsetX = (int)gameData.scrollX;
-                    int offsetY = (int)gameData.scrollY;
+                    int offsetX = (int)scrollX;
+                    int offsetY = (int)scrollY;
 
-                    if(c == '1') {
-                        RectF re = new RectF(x * Globals.TILE_WIDTH - offsetX, y*Globals.TILE_HEIGHT - offsetY,
-                                x * Globals.TILE_WIDTH - offsetX + Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT - offsetY + Globals.TILE_HEIGHT);
-                        Rect d = new Rect(16, 16*5, 16 + 16, 16*5 + 16);
-                        canvas.drawBitmap(sprites, d, re, null);
-                    } else {
-                        RectF re = new RectF(x * Globals.TILE_WIDTH - offsetX, y*Globals.TILE_HEIGHT - offsetY,
-                                x * Globals.TILE_WIDTH - offsetX + Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT - offsetY + Globals.TILE_HEIGHT);
-                        Rect d = new Rect(0, 16*5, 16, 16*5 + 16);
-                        canvas.drawBitmap(sprites, d, re, null);
+                    /** decide what tile from the map to draw **/
+                    Rect tile;
+                    if(c == '1') { //solid walls
+                        tile = new Rect(16, 16*5, 16 + 16, 16*5 + 16);
+                    } else {  //void
+                        tile = new Rect(0, 16*5, 16, 16*5 + 16);
                     }
 
+                    RectF tilePos = new RectF(x * Globals.TILE_WIDTH - offsetX, y*Globals.TILE_HEIGHT - offsetY,
+                            x * Globals.TILE_WIDTH - offsetX + Globals.TILE_WIDTH, y * Globals.TILE_HEIGHT - offsetY + Globals.TILE_HEIGHT);
+                    canvas.drawBitmap(sprites, tile, tilePos, null);
 
                 }
             }
 
-            for(Mob mob : gameData.npcs){
-                if(mob.isOOB()) continue;
+            /** draw entities **/
+            for(Entity e : gameData.npcs){
+                if(e.isOOB()) continue; //don't draw off screen entities
 
-                RectF r = new RectF(mob.getX() - gameData.scrollX, mob.getY() - gameData.scrollY,
-                        mob.getX() + Globals.TILE_WIDTH - gameData.scrollX, mob.getY() + Globals.TILE_HEIGHT - gameData.scrollY);
-                canvas.drawBitmap(sprites, mob.getFrame(), r, null );
+                RectF r = new RectF(e.getX() - scrollX, e.getY() - scrollY,
+                        e.getX() + Globals.TILE_WIDTH - scrollX, e.getY() + Globals.TILE_HEIGHT - scrollY);
+                canvas.drawBitmap(sprites, e.getFrame(), r, null );
             }
 
-            Player player = gameData.player;
+            /** draw player **/
+            Player player = gameData.getPlayer();
             canvas.drawBitmap(sprites, player.getFrame(), new RectF(player.getX(), player.getY(),
                     player.getX() + Globals.TILE_WIDTH, player.getY() + Globals.TILE_HEIGHT), null);
 
 
+            /** draw the bottom UI **/
             Paint paint = new Paint();
             paint.setColor(Color.WHITE);
             paint.setTextSize(48*Globals.SCALE_WIDTH);
-            String bottomBar = "Coins: "+ gameData.collected+" / "+ gameData.coins
+            String bottomBar = "Coins: "+ gameData.getCollected()+" / "+ gameData.getCoins()
                     + "    Time: " + (int) clock + "    Total points: "+ gameData.getPoints();
             canvas.drawText(bottomBar, 50 * Globals.SCALE_WIDTH, Globals.CANVAS_HEIGHT - 48*Globals.SCALE_HEIGHT, paint);
         }
 
+        /**
+         * Update the entities
+         *
+         * @param delta time passed since last loop
+         */
         public void update(double delta){
+
+            float scrollX = gameData.getScrollX();
+            float scrollY = gameData.getScrollY();
 
             clock = clock - delta;
 
-            Iterator<Mob> i = gameData.npcs.iterator();
+            Iterator<Entity> i = gameData.npcs.iterator();
             while(i.hasNext()) {
-                Mob mob = i.next();
+                Entity e = i.next();
 
-                mob.checkOutOfBounds(gameData.scrollX, gameData.scrollY);
-                if(mob.isOOB()) continue;
+                e.checkOutOfBounds(scrollX, scrollY);
+                if(e.isOOB()) continue; //don't update off screen entities
 
-                mob.update(delta);
+                e.update(delta);
 
-                if(isCollision(mob.getX(), mob.getY(), 0, 0)){
-                    mob.handleCollision();
+                if(isCollision(e.getX(), e.getY(), 0, 0)){
+                    e.handleCollision();
                 }
 
-                if(mob.getRect(gameData.scrollX, gameData.scrollY).intersect(gameData.player.getRect())){
-                    if(mob.isCollectible()){  //player hit a coin
-                        gameData.collected++;
+                Player player = gameData.getPlayer();
+
+                if(e.getRect(scrollX, scrollY).intersect(player.getRect())){
+                    if(e.isCollectible()){  //player hit a coin
+                        gameData.addCollected(1);
                         gameData.addPoints(25);
                         soundManager.playSound(0, 0.6f);
                         i.remove();
@@ -340,10 +392,8 @@ public class SurfaceActivity extends AppCompatActivity {
                         soundManager.playSound(1, 1.0f);
                         gameData.resetPos();
                         gameData.addPoints(-10);
-                        gameData.player.setDead(true);
 
                         return;
-
                     }
                 }
             }
@@ -352,6 +402,9 @@ public class SurfaceActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * state between levels, ends on screen touch
+     */
     private class LevelTransition extends GameState {
 
         private int bonus;
@@ -388,8 +441,6 @@ public class SurfaceActivity extends AppCompatActivity {
             if(touched){
                 touched = false;
                 gameData.addPoints(bonus);
-                gameData.scrollX = 0;
-                gameData.scrollY = 0;
                 clock = 300;
                 currentLevel++;
 
@@ -399,7 +450,7 @@ public class SurfaceActivity extends AppCompatActivity {
                     intent.putExtra("points", gameData.getPoints());
                     finish();
                     startActivity(intent);
-                } else {
+                } else { /*move to next level */
                     gameData.loadLevel(currentLevel);
                     gameState = new Playing();
                 }

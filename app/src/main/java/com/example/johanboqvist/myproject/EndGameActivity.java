@@ -25,6 +25,11 @@ import com.example.johanboqvist.myproject.Misc.Globals;
 import com.example.johanboqvist.myproject.Misc.HighScoreManager;
 import com.example.johanboqvist.myproject.Misc.MusicManager;
 
+/**
+ * This activity is fired when the player beats the game
+ * Highscore list is read to compare the points. Creates a form for the user if there's a new
+ * highscore.
+ */
 public class EndGameActivity extends AppCompatActivity {
 
     private TextView            title;
@@ -46,11 +51,12 @@ public class EndGameActivity extends AppCompatActivity {
         textPoints = (TextView) findViewById(R.id.textPoints);
         textPoints.setText("Points: "+points);
 
+        /**read highscore from aws and compare to current points **/
         new Thread(){
             public void run() {
                 highScoreManager.getHighScore("http://52.49.26.113/highscore.txt");
                 position = highScoreManager.isHighScore(points);
-                if(position != -1) {
+                if(position != -1) { //highscore!!!
                     messageHandler.sendEmptyMessage(0);
                 } else {
                     messageHandler.sendEmptyMessage(-1);
@@ -100,9 +106,9 @@ public class EndGameActivity extends AppCompatActivity {
             super.handleMessage(msg);
 
             switch(msg.what) {
-                case -1: noHighScore(); break;
-                case 0: createForm(); break;
-                case 1: {
+                case -1: noHighScore(); break; //no highscore, so just give the user the bad news
+                case 0: createForm(); break; //highscore! enter your name.
+                case 1: { //user submitted name
                     finish();
                 } break;
             }

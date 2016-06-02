@@ -5,7 +5,7 @@ import android.graphics.Rect;
 /**
  * Created by johanboqvist on 23/05/16.
  */
-public class Coin extends Mob {
+public class Coin extends Entity {
 
     public Coin(float x, float y) {
         super(x, y);

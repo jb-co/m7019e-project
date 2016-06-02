@@ -13,6 +13,10 @@ import com.example.johanboqvist.myproject.Misc.Globals;
 import com.example.johanboqvist.myproject.Misc.HighScoreManager;
 import com.example.johanboqvist.myproject.Misc.MusicManager;
 
+/**
+ * Main activity of app. Loads highscore from AWS and creates the MusicManager.
+ * A Handler is used to tell the UI to display the highscore once the file is read.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private HighScoreManager    highScoreManager = new HighScoreManager();
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //set up music player
         MusicManager.createPlayer(this);
 
         textHighScore = (TextView) findViewById(R.id.textScore);
@@ -70,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
+        /** Make sure not to stop the music on activity transition */
         if(Globals.homePressed){
             MusicManager.stopMusic();
         }
@@ -82,12 +88,9 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-    }
-
+    /**
+     * Set the text once the getHighScore thread returns results
+     */
     private final Handler messageHandler = new Handler() {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -95,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * get Highscore from the AWS server.
+     */
     public void getHighScore(){
         new Thread() {
             public void run() {

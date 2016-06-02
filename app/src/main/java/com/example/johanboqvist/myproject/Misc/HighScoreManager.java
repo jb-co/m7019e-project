@@ -12,12 +12,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * Created by johanboqvist on 24/05/16.
+ * Reads and writes to global highscore list kept on Amazon server.
  */
 public class HighScoreManager {
 
     private ArrayList<HighScoreEntry> list = new ArrayList<HighScoreEntry>();
 
+    /**
+     * Reads the highscore from aws and inserts entries in list array.
+     * @param location file location
+     * @return
+     */
     public String getHighScore(String location){
         try {
 
@@ -52,10 +57,15 @@ public class HighScoreManager {
         return null;
     }
 
+    /**
+     * Checks if current score is a highscore, must be run after getHighScore.
+     * @param points players points
+     * @return  returns position to insert entry or -1 if not a highscore.
+     */
     public int isHighScore(int points){
 
         boolean goodEnough = false;
-        int pos = 0;
+        int pos = 0; //where to insert new entry in highscore list
 
         Iterator it = list.iterator();
         while (it.hasNext()) {
@@ -69,7 +79,6 @@ public class HighScoreManager {
         }
 
         if(goodEnough){
-           // list.add(pos, new HighScoreEntry(name, points));
             return pos;
         } else {
             return -1;
@@ -80,6 +89,10 @@ public class HighScoreManager {
         list.add(pos, new HighScoreEntry(name, points));
     }
 
+    /**
+     * Writes new highscore to text file on aws server
+     * @param location  location of php-file which handles writing to text file
+     */
     public void writeHighScore(String location){
         String str = "";
         for(HighScoreEntry h : list.subList(0, 5)){
@@ -100,7 +113,6 @@ public class HighScoreManager {
             dos.close();
             int responseCode = http.getResponseCode();
 
-
             http.disconnect();
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -113,6 +125,9 @@ public class HighScoreManager {
         return list;
     }
 
+    /**
+     * Entry structure class.
+     */
     private class HighScoreEntry {
         public String name;
         public int points;

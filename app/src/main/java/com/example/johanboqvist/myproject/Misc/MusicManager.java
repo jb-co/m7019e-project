@@ -6,12 +6,12 @@ import android.media.MediaPlayer;
 import com.example.johanboqvist.myproject.R;
 
 /**
- * Created by johanboqvist on 25/05/16.
+ * Holds the MediaPlayer object and handles starting and stopping music
  */
 public class MusicManager {
 
     public static MediaPlayer   player;
-    public static boolean       MUSIC = true;
+    public static boolean       MUSIC = true;   //is music set to On in settings?
 
     public static void createPlayer(Context context) {
 

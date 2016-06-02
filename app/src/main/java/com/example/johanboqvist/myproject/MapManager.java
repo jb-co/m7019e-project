@@ -7,7 +7,7 @@ import com.example.johanboqvist.myproject.Misc.FileManager;
 import java.util.ArrayList;
 
 /**
- * Created by johanboqvist on 12/05/16.
+ * Loads map from raw resource file and keeps in map array
  */
 public class MapManager {
 
@@ -18,6 +18,9 @@ public class MapManager {
         this.context = context;
     }
 
+    /**
+     * @param resource  reads characters from resource id file and adds to map array
+     */
     public void loadMap(int resource){
 
         FileManager f = new FileManager(context);

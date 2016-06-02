@@ -8,7 +8,7 @@ import com.example.johanboqvist.myproject.Misc.Globals;
 /**
  * Created by johanboqvist on 20/05/16.
  */
-public class Player extends Mob {
+public class Player extends Entity {
 
     private int offsetY = 1;
     private float startX, startY;
